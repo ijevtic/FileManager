@@ -17,45 +17,45 @@ import static org.example.Constants.*;
 
 public class Implementation extends FileManager{
     @Override
-    public void createStorage() {
+    public void createStorage()throws RuntimeException {
         createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }
     @Override
-    public void createStorage(String path, String name) {
+    public void createStorage(String path, String name)throws RuntimeException {
         createStorage(CONFIGURATION, path, name);
     }
     @Override
-    public void createStorage(String name) {
+    public void createStorage(String name) throws RuntimeException {
         createStorage(CONFIGURATION, STORAGE_PATH, name);
     }
     @Override
-    public void createStorage(Configuration configuration) {
+    public void createStorage(Configuration configuration) throws RuntimeException{
         createStorage(configuration, STORAGE_PATH, STORAGE_NAME);
     }
     @Override
-    public void createStorage(Configuration configuration, String name) {
+    public void createStorage(Configuration configuration, String name) throws RuntimeException{
         createStorage(configuration, STORAGE_PATH, name);
     }
     @Override
-    public void createStorage(Configuration configuration, String path, String name) {
+    public void createStorage(Configuration configuration, String path, String name) throws RuntimeException{
         String storagePath = path + name;
         createDir(storagePath);
         setStorage(new Storage(storagePath, configuration));
     }
 
     @Override
-    public void createDirectory(String path, String pattern) {
+    public void createDirectory(String path, String pattern) throws RuntimeException{
         createDir(path + "dir");
     }
 
     @Override
-    public void addFiles(List<File> fileList, String destinationPath) {
+    public void addFiles(List<File> fileList, String destinationPath) throws RuntimeException{
         File dest = new File(destinationPath);
         for(File f : fileList) {
             try {
                 FileUtils.copyToDirectory(f, dest);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -140,7 +140,7 @@ public class Implementation extends FileManager{
         rename(new File(sourcePath), newName);
     }
 
-    private void createDir(String path) {
+    private void createDir(String path) throws RuntimeException{
         try {
             Path dirPath = Paths.get(path);
 
@@ -149,8 +149,7 @@ public class Implementation extends FileManager{
             System.out.printf("Directory on path %s is created!%n", path);
 
         } catch (IOException e) {
-
-            System.err.println("Failed to create directory!" + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }
