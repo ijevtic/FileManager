@@ -19,7 +19,8 @@ public abstract class FileManager {
     public abstract void addFiles(List<SpecFile> files, String destination) throws Exception;
     public abstract void removeFile(String path) throws Exception;
     public abstract void removeFile(SpecFile file) throws Exception;
-    public abstract void removeFiles(List<String> files) throws Exception;
+    public abstract void removeFiles(String[] files) throws Exception;
+    public abstract void removeFiles(SpecFile[] files) throws Exception;
     public abstract void moveFile(SpecFile file, SpecFile destination) throws Exception;
     public abstract void moveFile(SpecFile file, String destinationPath) throws Exception;
     public abstract void moveFile(String filePath, String destinationPath) throws Exception;

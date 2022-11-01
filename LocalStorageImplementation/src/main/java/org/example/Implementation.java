@@ -72,11 +72,19 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void removeFiles(List<String> list) throws Exception{
+    public void removeFiles(String[] list) throws Exception{
         for(String path: list) {
             removeFile(new SpecFile(path));
         }
     }
+
+    @Override
+    public void removeFiles(SpecFile[] list) throws Exception{
+        for(SpecFile file: list) {
+            removeFile(file);
+        }
+    }
+
     @Override
     public void moveFile(SpecFile file, SpecFile destination) throws Exception{
         try {
