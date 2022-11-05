@@ -15,7 +15,10 @@ public abstract class FileManager {
     public abstract void createStorage(Configuration c) throws Exception;
     public abstract void createStorage(Configuration c, String name) throws Exception;
     public abstract void createStorage(Configuration c, String path, String name) throws Exception;
+    public abstract void createDirectory(String path) throws Exception;
+    public abstract void createDirectory(String path, int fileCount) throws Exception;
     public abstract void createDirectory(String path, String pattern) throws Exception;
+    public abstract void createDirectory(String path, String pattern, int fileCount) throws Exception;
     public abstract void addFiles(List<SpecFile> files, String destination) throws Exception;
     public abstract void removeFile(String path) throws Exception;
     public abstract void removeFile(SpecFile file) throws Exception;

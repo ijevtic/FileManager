@@ -18,22 +18,27 @@ public class Implementation extends FileManager{
     public void createStorage()throws RuntimeException {
         createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }
+
     @Override
     public void createStorage(String path, String name)throws RuntimeException {
         createStorage(CONFIGURATION, path, name);
     }
+
     @Override
     public void createStorage(String name) throws RuntimeException {
         createStorage(CONFIGURATION, STORAGE_PATH, name);
     }
+
     @Override
     public void createStorage(Configuration configuration) throws RuntimeException{
         createStorage(configuration, STORAGE_PATH, STORAGE_NAME);
     }
+
     @Override
     public void createStorage(Configuration configuration, String name) throws RuntimeException{
         createStorage(configuration, STORAGE_PATH, name);
     }
+
     @Override
     public void createStorage(Configuration configuration, String path, String name) throws RuntimeException{
         String storagePath = formatPath(path, name);
@@ -126,7 +131,6 @@ public class Implementation extends FileManager{
         download(source, new SpecFile(destinationPath));
     }
 
-
     @Override
     public void download(String sourcePath, String destinationPath) throws Exception{
         download(new SpecFile(sourcePath), new SpecFile(destinationPath));
@@ -136,8 +140,7 @@ public class Implementation extends FileManager{
     public boolean rename(SpecFile file, String newName) {
         File oldFile = new File(file.getPath());
         File newFile = new File(getParentPath(file.getPath())+newName);
-        boolean flag = oldFile.renameTo(newFile);
-        return flag;
+        return oldFile.renameTo(newFile);
     }
 
     @Override
