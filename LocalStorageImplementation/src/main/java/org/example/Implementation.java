@@ -47,8 +47,23 @@ public class Implementation extends FileManager{
     }
 
     @Override
+    public void createDirectory(String s) throws Exception {
+
+    }
+
+    @Override
+    public void createDirectory(String s, int i) throws Exception {
+
+    }
+
+    @Override
     public void createDirectory(String path, String pattern) throws RuntimeException{
         createDir(formatPath(path, "dir"));
+    }
+
+    @Override
+    public void createDirectory(String s, String s1, int i) throws Exception {
+
     }
 
     @Override
