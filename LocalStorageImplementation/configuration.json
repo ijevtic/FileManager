@@ -1,0 +1,12 @@
+{
+  "path": "/home/ijevtic/Desktop/PredefinedName",
+  "configuration": {
+    "byteSize": 1,
+    "forbiddenExtensions": [
+      "exe"
+    ],
+    "globalFileCount": 100,
+    "mapFileCount": [],
+    "path": "configuration.json"
+  }
+}

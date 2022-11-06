@@ -1,14 +1,12 @@
 package org.example;
 
-import org.raf.specification.Configuration;
-import org.raf.specification.FileManager;
-import org.raf.specification.SpecFile;
-import org.raf.specification.Storage;
+import org.raf.specification.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import static org.example.Constants.*;
@@ -40,30 +38,58 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void createStorage(Configuration configuration, String path, String name) throws RuntimeException{
-        String storagePath = formatPath(path, name);
+    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException{
+        String storagePath = formatPath(rootPath, name);
         createDir(storagePath);
+
         setStorage(new Storage(storagePath, configuration));
+        try {
+            getStorage().updateConfiguration();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void createDirectory(String s) throws Exception {
-
+    public void loadStorage(String path) throws Exception {
+//        String dirName = getNameFromPath(path);
+        Storage s = new Storage(path);
+        s.readConfiguration();
+        setStorage(s);
+        System.out.println(getStorage());
     }
 
     @Override
-    public void createDirectory(String s, int i) throws Exception {
-
+    public void createDirectory(String rootPath) throws RuntimeException {
+        createAndStoreDirectory(formatPath(rootPath, "dir"), -1);
     }
 
     @Override
-    public void createDirectory(String path, String pattern) throws RuntimeException{
-        createDir(formatPath(path, "dir"));
+    public void createDirectory(String rootPath, int maxFileCount) throws RuntimeException {
+        createAndStoreDirectory(formatPath(rootPath, "dir"), maxFileCount);
     }
 
     @Override
-    public void createDirectory(String s, String s1, int i) throws Exception {
+    public void createDirectory(String rootPath, String pattern) throws RuntimeException{
+        createAndStoreDirectory(formatPath(rootPath, pattern), -1);
+    }
 
+    @Override
+    public void createDirectory(String rootPath, String pattern, int maxFileCount) throws RuntimeException {
+        createAndStoreDirectory(formatPath(rootPath, pattern), maxFileCount);
+    }
+
+    private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException {
+        createDir(path);
+        if(maxFileCount < 0)
+            return;
+        getStorage().getConfiguration().addCountForDir(path, maxFileCount);
+        try {
+            getStorage().updateConfiguration();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -86,6 +112,7 @@ public class Implementation extends FileManager{
     public void removeFile(SpecFile file) throws Exception{
         try {
             Files.delete(Paths.get(file.getPath()));
+            getStorage().getConfiguration().removeCountForDir(file.getPath());
         } catch (IOException e) {
             throw new Exception(e);
         }
@@ -110,6 +137,7 @@ public class Implementation extends FileManager{
         try {
             String destinationPath = formatPath(destination.getPath(), file.getFileName());
             Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
+            getStorage().getConfiguration().moveCountForDir(file.getPath(), destinationPath);
         } catch (IOException e) {
             throw new Exception(e);
         }
@@ -155,12 +183,118 @@ public class Implementation extends FileManager{
     public boolean rename(SpecFile file, String newName) {
         File oldFile = new File(file.getPath());
         File newFile = new File(getParentPath(file.getPath())+newName);
+        getStorage().getConfiguration().moveCountForDir(oldFile.getPath(), newFile.getPath());
         return oldFile.renameTo(newFile);
     }
 
     @Override
     public boolean rename(String sourcePath, String newName) {
         return rename(new SpecFile(sourcePath), newName);
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, String s1) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, List<String> list) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, List<String> list, String s1) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, String s1) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, List<String> list) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, List<String> list, String s1) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s, String s1) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s, List<String> list) {
+        return null;
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s, List<String> list, String s1) {
+        return null;
+    }
+
+    @Override
+    public boolean containsFile(String s, List<String> list) {
+        return false;
+    }
+
+    @Override
+    public String returnFileLocation(String s) {
+        return null;
+    }
+
+    @Override
+    public void sortFiles(SortingCriteria sortingCriteria) {
+
+    }
+
+    @Override
+    public List<SpecFile> returnModifiedFiles(String s, String s1, String s2) {
+        return null;
+    }
+
+    @Override
+    public List<String> returnFileName(List<SpecFile> list) {
+        return null;
+    }
+
+    @Override
+    public List<String> returnFilePath(List<SpecFile> list) {
+        return null;
+    }
+
+    @Override
+    public List<FileTime> returnDateCreated(List<SpecFile> list) {
+        return null;
+    }
+
+    @Override
+    public List<FileTime> returnDateMModified(List<SpecFile> list) {
+        return null;
+    }
+
+    @Override
+    public List<Boolean> returnIfDepository(List<SpecFile> list) {
+        return null;
     }
 
     private void createDir(String path) throws RuntimeException{
@@ -179,6 +313,12 @@ public class Implementation extends FileManager{
         int poz = path.lastIndexOf("/");
         if(poz == -1) return path + "/";
         return path.substring(0, poz) + "/";
+    }
+
+    private String getNameFromPath(String path) {
+        if(path.charAt(path.length()-1) == '/')
+            path = path.substring(0, path.length()-1);
+        return path.substring(path.lastIndexOf("/")+1);
     }
 
     private void copy(SpecFile source, SpecFile destination) throws IOException {
