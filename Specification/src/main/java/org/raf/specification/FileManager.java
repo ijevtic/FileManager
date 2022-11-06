@@ -68,6 +68,8 @@ public abstract class FileManager {
     public abstract List<FileTime> returnDateMModified(List<SpecFile> files);
     public abstract List<Boolean> returnIfDepository(List<SpecFile> files);
     //End of Wrapper methods
+    //Testing git
+    public abstract void testingGitPleaseWork();
     public Storage getStorage() {
         return storage;
     }
