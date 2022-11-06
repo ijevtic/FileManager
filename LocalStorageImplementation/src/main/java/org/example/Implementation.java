@@ -360,7 +360,19 @@ public class Implementation extends FileManager{
 
     private boolean isFileCountOk(String dirPath, int cntNewFiles){
         File dir = new File(dirPath);
-        int maxFileCount = getStorage().getConfiguration().getFileCountForDir(dirPath);
+        int maxFileCount;
+        if(comparePaths(dirPath, getStorage().getPath()))
+            maxFileCount = getStorage().getConfiguration().getGlobalFileCount();
+        else
+            maxFileCount = getStorage().getConfiguration().getFileCountForDir(dirPath);
         return maxFileCount == -1 || Objects.requireNonNull(dir.list()).length + cntNewFiles <= maxFileCount;
+    }
+
+    private boolean comparePaths(String path1, String path2) {
+        if(path1.charAt(path1.length()-1) != '/')
+            path1 += "/";
+        if(path2.charAt(path1.length()-1) != '/')
+            path2 += "/";
+        return path1.equals(path2);
     }
 }
