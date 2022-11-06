@@ -1,6 +1,7 @@
 package org.example;
 
 import org.raf.specification.*;
+import org.raf.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,6 @@ public class Implementation extends FileManager{
 
     @Override
     public void loadStorage(String path) throws Exception {
-//        String dirName = getNameFromPath(path);
         Storage s = new Storage(path);
         s.readConfiguration();
         setStorage(s);
@@ -72,16 +72,20 @@ public class Implementation extends FileManager{
 
     @Override
     public void createDirectory(String rootPath, String pattern) throws RuntimeException{
-        createAndStoreDirectory(formatPath(rootPath, pattern), -1);
+        createDirectory(rootPath, pattern, -1);
     }
 
     @Override
     public void createDirectory(String rootPath, String pattern, int maxFileCount) throws RuntimeException {
-        createAndStoreDirectory(formatPath(rootPath, pattern), maxFileCount);
+        List<String> dirNames = Utils.dirNamesFromPattern(pattern);
+        for(String name: dirNames) {
+            createAndStoreDirectory(formatPath(rootPath, name), maxFileCount);
+        }
     }
 
     private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException {
-        createDir(path);
+        if(!createDir(path))
+            return;
         if(maxFileCount < 0)
             return;
         getStorage().getConfiguration().addCountForDir(path, maxFileCount);
@@ -297,10 +301,13 @@ public class Implementation extends FileManager{
         return null;
     }
 
-    private void createDir(String path) throws RuntimeException{
+    private boolean createDir(String path) throws RuntimeException{
+        if(Files.exists(Paths.get(path)))
+            return false;
         try {
             new File(path).mkdirs();
             System.out.printf("Directory on path %s is created!%n", path);
+            return true;
 
         } catch (Exception e) {
             throw new RuntimeException(e);

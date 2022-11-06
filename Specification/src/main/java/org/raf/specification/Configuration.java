@@ -1,7 +1,5 @@
 package org.raf.specification;
 
-import jdk.internal.net.http.common.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
