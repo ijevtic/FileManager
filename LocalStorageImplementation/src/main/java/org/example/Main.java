@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +10,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Implementation im = new Implementation();
-        im.createStorage();
-        im.createDirectory(im.getStorage().getPath(), "ab{1-5}c");
+        im.loadStorage("/home/ijevtic/Desktop/PredefinedName");
+        File f = new File(im.getStorage().getPath());
+        System.out.println(f.getTotalSpace());
     }
-
 }

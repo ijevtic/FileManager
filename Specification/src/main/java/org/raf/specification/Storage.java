@@ -3,6 +3,7 @@ package org.raf.specification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.raf.exceptions.BrokenConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,16 +45,32 @@ public class Storage {
         objectMapper.writeValue(file, this);
     }
 
-    public Configuration readConfiguration() throws IOException {
+    public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File file;
+        File configFile;
+        String configurationPath = getConfigurationPath();
         if(configuration == null)
-            file = new File(getConfigurationPath());
+            configFile = new File(configurationPath);
         else
-            file = new File(configuration.getPath());
-        Storage s = objectMapper.readValue(file, new TypeReference<Storage>() {
-        });
-        setConfiguration(s.configuration);
+            configFile = new File(configuration.getPath());
+        if(!configFile.createNewFile()) {
+            try {
+                Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
+                });
+                setConfiguration(s.configuration);
+                configuration.setPath(configurationPath);
+            }
+            catch(IOException exception) {
+                throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
+            }
+
+        }
+        else {
+            setConfiguration(new Configuration());
+            configuration.setPath(configurationPath);
+            updateConfiguration();
+        }
+
         return configuration;
     }
 

@@ -1,7 +1,10 @@
 package org.raf.specification;
 
+import org.raf.exceptions.BrokenConfigurationException;
+
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +25,7 @@ public abstract class FileManager {
     public abstract void createStorage(Configuration c) throws Exception;
     public abstract void createStorage(Configuration c, String name) throws Exception;
     public abstract void createStorage(Configuration c, String rootPath, String name) throws Exception;
-    public abstract void loadStorage(String path) throws Exception;
+    public abstract void loadStorage(String path) throws IOException, BrokenConfigurationException;
     public abstract void createDirectory(String rootPath) throws Exception;
     public abstract void createDirectory(String rootPath, int fileCount) throws Exception;
     public abstract void createDirectory(String rootPath, String pattern) throws Exception;

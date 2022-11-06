@@ -1,5 +1,6 @@
 package org.example;
 
+import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.specification.*;
 import org.raf.utils.Utils;
 
@@ -53,7 +54,7 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void loadStorage(String path) throws Exception {
+    public void loadStorage(String path) throws IOException, BrokenConfigurationException {
         Storage s = new Storage(path);
         s.readConfiguration();
         setStorage(s);

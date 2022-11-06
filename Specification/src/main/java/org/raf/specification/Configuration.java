@@ -12,7 +12,12 @@ public class Configuration {
     private Map<String, Integer> mapFileCount;
     private String path;
 
-    public Configuration() {}
+    public Configuration() {
+        this.byteSize = 10000;
+        this.forbiddenExtensions = List.of("exe");
+        this.globalFileCount = 10;
+        this.mapFileCount = new HashMap<>();
+    }
     public Configuration(String storagePath, int byteSize, List<String> forbiddenExtensions, int globalFileCount, Map<String, Integer> mapFileCount) {
         this.path = createPath(storagePath);
         this.byteSize = byteSize;
