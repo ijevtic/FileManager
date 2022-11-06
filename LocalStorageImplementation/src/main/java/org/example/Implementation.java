@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.example.Constants.*;
 
@@ -62,23 +63,29 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void createDirectory(String rootPath) throws RuntimeException {
-        createAndStoreDirectory(formatPath(rootPath, "dir"), -1);
+    public void createDirectory(String rootPath) throws BrokenConfigurationException {
+        createDirectory(rootPath, -1);
     }
 
     @Override
-    public void createDirectory(String rootPath, int maxFileCount) throws RuntimeException {
+    public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException {
+        if(!isFileCountOk(rootPath, 1)) {
+            throw new BrokenConfigurationException("Broken exception for file " + rootPath);
+        }
         createAndStoreDirectory(formatPath(rootPath, "dir"), maxFileCount);
     }
 
     @Override
-    public void createDirectory(String rootPath, String pattern) throws RuntimeException{
+    public void createDirectory(String rootPath, String pattern) throws Exception{
         createDirectory(rootPath, pattern, -1);
     }
 
     @Override
-    public void createDirectory(String rootPath, String pattern, int maxFileCount) throws RuntimeException {
+    public void createDirectory(String rootPath, String pattern, int maxFileCount) throws Exception {
         List<String> dirNames = Utils.dirNamesFromPattern(pattern);
+        if(!isFileCountOk(rootPath, dirNames.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + rootPath);
+        }
         for(String name: dirNames) {
             createAndStoreDirectory(formatPath(rootPath, name), maxFileCount);
         }
@@ -99,6 +106,9 @@ public class Implementation extends FileManager{
 
     @Override
     public void addFiles(List<SpecFile> fileList, String destinationPath) throws Exception{
+        if(!isFileCountOk(destinationPath, fileList.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
+        }
         for(SpecFile f : fileList) {
             try {
                 copy(f, new SpecFile(destinationPath));
@@ -138,13 +148,16 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void moveFile(SpecFile file, SpecFile destination) throws Exception{
+    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException {
+        if(!isFileCountOk(destination.getPath(), 1)) {
+            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
+        }
         try {
             String destinationPath = formatPath(destination.getPath(), file.getFileName());
             Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
             getStorage().getConfiguration().moveCountForDir(file.getPath(), destinationPath);
         } catch (IOException e) {
-            throw new Exception(e);
+            throw new RuntimeException();
         }
     }
 
@@ -159,7 +172,10 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void moveFiles(List<String> list, String destinationPath) throws Exception{
+    public void moveFiles(List<String> list, String destinationPath) throws Exception {
+        if(!isFileCountOk(destinationPath, list.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
+        }
         for(String path: list) {
             moveFile(new SpecFile(path), new SpecFile(destinationPath));
         }
@@ -340,5 +356,11 @@ public class Implementation extends FileManager{
             path += '/';
         path += fileName;
         return path;
+    }
+
+    private boolean isFileCountOk(String dirPath, int cntNewFiles){
+        File dir = new File(dirPath);
+        int maxFileCount = getStorage().getConfiguration().getFileCountForDir(dirPath);
+        return maxFileCount == -1 || Objects.requireNonNull(dir.list()).length + cntNewFiles <= maxFileCount;
     }
 }

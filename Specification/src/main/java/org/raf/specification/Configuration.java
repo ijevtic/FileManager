@@ -86,8 +86,14 @@ public class Configuration {
         if(!mapFileCount.containsKey(oldDirPath))
             return;
         int val = mapFileCount.get(oldDirPath);
-        mapFileCount.remove(oldDirPath);
-        mapFileCount.put(newDirPath, val);
+        removeCountForDir(oldDirPath);
+        addCountForDir(newDirPath, val);
+    }
+
+    public int getFileCountForDir(String path) {
+        if(mapFileCount.containsKey(path))
+            return mapFileCount.get(path);
+        return -1;
     }
 
     public int getGlobalFileCount() {

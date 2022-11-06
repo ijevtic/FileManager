@@ -12,6 +12,8 @@ public class Main {
         Implementation im = new Implementation();
         im.loadStorage("/home/ijevtic/Desktop/PredefinedName");
         File f = new File(im.getStorage().getPath());
-        System.out.println(f.getTotalSpace());
+        im.createDirectory(im.getStorage().getPath(), "abc{1-20}d");
+        System.out.println(f.length());
+
     }
 }
