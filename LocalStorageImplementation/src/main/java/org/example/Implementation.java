@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
-import java.util.Objects;
 
+import static org.example.ConfigurationCheck.*;
 import static org.example.Constants.*;
 
 public class Implementation extends FileManager{
@@ -69,7 +69,7 @@ public class Implementation extends FileManager{
 
     @Override
     public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException {
-        if(!isFileCountOk(rootPath, 1)) {
+        if(!fileCountCheck(getStorage(), rootPath, 1)) {
             throw new BrokenConfigurationException("Broken exception for file " + rootPath);
         }
         createAndStoreDirectory(formatPath(rootPath, "dir"), maxFileCount);
@@ -83,7 +83,7 @@ public class Implementation extends FileManager{
     @Override
     public void createDirectory(String rootPath, String pattern, int maxFileCount) throws Exception {
         List<String> dirNames = Utils.dirNamesFromPattern(pattern);
-        if(!isFileCountOk(rootPath, dirNames.size())) {
+        if(!fileCountCheck(getStorage(), rootPath, dirNames.size())) {
             throw new BrokenConfigurationException("Broken exception for file " + rootPath);
         }
         for(String name: dirNames) {
@@ -106,7 +106,9 @@ public class Implementation extends FileManager{
 
     @Override
     public void addFiles(List<SpecFile> fileList, String destinationPath) throws Exception{
-        if(!isFileCountOk(destinationPath, fileList.size())) {
+        if(!fileCountCheck(getStorage(), destinationPath, fileList.size())
+        || !extensionCheck(getStorage(), fileList)
+        || !fileSizeCheck(getStorage(), fileList)) {
             throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
         }
         for(SpecFile f : fileList) {
@@ -149,7 +151,7 @@ public class Implementation extends FileManager{
 
     @Override
     public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException {
-        if(!isFileCountOk(destination.getPath(), 1)) {
+        if(!fileCountCheck(getStorage(), destination.getPath(), 1)) {
             throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
         }
         try {
@@ -173,7 +175,7 @@ public class Implementation extends FileManager{
 
     @Override
     public void moveFiles(List<String> list, String destinationPath) throws Exception {
-        if(!isFileCountOk(destinationPath, list.size())) {
+        if(!fileCountCheck(getStorage(), destinationPath, list.size())) {
             throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
         }
         for(String path: list) {
@@ -356,23 +358,5 @@ public class Implementation extends FileManager{
             path += '/';
         path += fileName;
         return path;
-    }
-
-    private boolean isFileCountOk(String dirPath, int cntNewFiles){
-        File dir = new File(dirPath);
-        int maxFileCount;
-        if(comparePaths(dirPath, getStorage().getPath()))
-            maxFileCount = getStorage().getConfiguration().getGlobalFileCount();
-        else
-            maxFileCount = getStorage().getConfiguration().getFileCountForDir(dirPath);
-        return maxFileCount == -1 || Objects.requireNonNull(dir.list()).length + cntNewFiles <= maxFileCount;
-    }
-
-    private boolean comparePaths(String path1, String path2) {
-        if(path1.charAt(path1.length()-1) != '/')
-            path1 += "/";
-        if(path2.charAt(path1.length()-1) != '/')
-            path2 += "/";
-        return path1.equals(path2);
     }
 }
