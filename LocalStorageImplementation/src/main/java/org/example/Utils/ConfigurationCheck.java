@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Utils;
 
 import org.raf.specification.SpecFile;
 import org.raf.specification.Storage;
@@ -6,6 +6,8 @@ import org.raf.specification.Storage;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+
+import static org.example.Utils.StringUtils.*;
 
 public class ConfigurationCheck {
     public static boolean extensionCheck(Storage storage, List<SpecFile> files) {
@@ -44,18 +46,14 @@ public class ConfigurationCheck {
         return maxFileCount == -1 || Objects.requireNonNull(dir.list()).length + cntNewFiles <= maxFileCount;
     }
 
-    private static boolean comparePaths(String path1, String path2) {
-        if(path1.charAt(path1.length()-1) != '/')
-            path1 += "/";
-        if(path2.charAt(path1.length()-1) != '/')
-            path2 += "/";
-        return path1.equals(path2);
+    public static boolean isAncestor(String parent, String child) {
+        return removeSlash(parent).contains(removeSlash(getParentPath(child))) ||
+                comparePaths(parent, child);
     }
 
-    private static String getExtension(String s) {
-        int dot = s.lastIndexOf(".");
-        if(dot == -1)
-            return null;
-        return s.substring(dot+1);
+    private static boolean comparePaths(String path1, String path2) {
+        return removeSlash(path1).equals(removeSlash(path2));
     }
+
+
 }

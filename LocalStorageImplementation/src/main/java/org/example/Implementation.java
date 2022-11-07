@@ -1,6 +1,7 @@
 package org.example;
 
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.IllegalDestinationException;
 import org.raf.specification.*;
 import org.raf.utils.Utils;
 
@@ -11,8 +12,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 
-import static org.example.ConfigurationCheck.*;
+import static org.example.Utils.ConfigurationCheck.*;
 import static org.example.Constants.*;
+import static org.example.Utils.StringUtils.getParentPath;
 
 public class Implementation extends FileManager{
     @Override
@@ -112,6 +114,9 @@ public class Implementation extends FileManager{
             throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
         }
         for(SpecFile f : fileList) {
+            if(!isAncestor(getStorage().getPath(), destinationPath) || isAncestor(getStorage().getPath(), f.getPath())) {
+                throw new IllegalDestinationException("Illegal destination " + f.getPath() + " " + destinationPath);
+            }
             try {
                 copy(f, new SpecFile(destinationPath));
             } catch (IOException e) {
@@ -150,7 +155,10 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException {
+    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
+        if(isAncestor(getStorage().getPath(), destination.getPath())) {
+            throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
+        }
         if(!fileCountCheck(getStorage(), destination.getPath(), 1)) {
             throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
         }
@@ -185,6 +193,9 @@ public class Implementation extends FileManager{
 
     @Override
     public void download(SpecFile source, SpecFile destination) throws Exception{
+        if(isAncestor(getStorage().getPath(), destination.getPath())) {
+            throw new IllegalDestinationException("Illegal destination " + source.getPath() + " " + destination.getPath());
+        }
         try {
             copy(source, destination);
         } catch (IOException e) {
@@ -331,20 +342,6 @@ public class Implementation extends FileManager{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String getParentPath(String path) {
-        if (path.charAt(path.length()-1) == '/')
-            path = path.substring(0, path.length()-1);
-        int poz = path.lastIndexOf("/");
-        if(poz == -1) return path + "/";
-        return path.substring(0, poz) + "/";
-    }
-
-    private String getNameFromPath(String path) {
-        if(path.charAt(path.length()-1) == '/')
-            path = path.substring(0, path.length()-1);
-        return path.substring(path.lastIndexOf("/")+1);
     }
 
     private void copy(SpecFile source, SpecFile destination) throws IOException {
