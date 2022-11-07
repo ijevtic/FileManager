@@ -156,7 +156,7 @@ public class Implementation extends FileManager{
 
     @Override
     public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
-        if(isAncestor(getStorage().getPath(), destination.getPath())) {
+        if(!isAncestor(getStorage().getPath(), destination.getPath())) {
             throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
         }
         if(!fileCountCheck(getStorage(), destination.getPath(), 1)) {
