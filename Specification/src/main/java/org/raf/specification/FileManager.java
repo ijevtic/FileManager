@@ -2,15 +2,9 @@ package org.raf.specification;
 
 import org.raf.exceptions.BrokenConfigurationException;
 
-import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.SimpleTimeZone;
-import java.util.stream.Collectors;
 
 public abstract class FileManager {
 
