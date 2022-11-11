@@ -129,11 +129,20 @@ public class Implementation extends FileManager{
         File f = new File(s);
         String[] fileNames = f.list();
         List<SpecFile> specFiles = new ArrayList<>();
-        for(String str : fileNames){
-            String path = formatPath(s,str);
-            BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
-            specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
+        if(fileNames != null){
+            for(String str : fileNames){
+                String path = formatPath(s,str);
+                BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
+                specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
+            }
         }
+//        if(fileNames == null)
+//            throw new RuntimeException();
+//        for(String str : fileNames){
+//            String path = formatPath(s,str);
+//            BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
+//            specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
+//        }
 
         return specFiles;
     }
@@ -182,10 +191,11 @@ public class Implementation extends FileManager{
     @Override
     public List<SpecFile> returnAllDirectoryFiles(String s) throws Exception {
         List<SpecFile> specFiles = returnDirectoryFiles(s);
+        List<SpecFile> returnList = new ArrayList<>(specFiles);
         for(SpecFile sf : specFiles){
-            specFiles.addAll(returnDirectoryFiles(sf.getPath()));
+            returnList.addAll(returnDirectoryFiles(sf.getPath()));
         }
-        return specFiles;
+        return returnList;
     }
 
     @Override
@@ -301,17 +311,22 @@ public class Implementation extends FileManager{
 
     private String dfs(String path, String name){
         File f = new File(path);
+        String newPath = null;
         String [] fileList = f.list();
-        if(fileList == null)
-            throw new RuntimeException();
-        List<String> fileNames = List.of(fileList);
-        if (fileNames.contains(name)) return formatPath(path,name);
-        else {
-            for(String name2 : fileNames){
-                String path2 = formatPath(path, name2);
-                dfs(path2, name);
+//        if(fileList == null)
+//            throw new RuntimeException();
+        if(fileList != null){
+            List<String> fileNames = List.of(fileList);
+            if (fileNames.contains(name)) return formatPath(path,name);
+            else {
+                for(String name2 : fileNames){
+                    String path2 = formatPath(path, name2);
+                    newPath = dfs(path2, name);
+                    if (newPath != null) return newPath;
+                }
             }
         }
+
         return null;
     }
 
