@@ -6,8 +6,12 @@ import org.raf.exceptions.BrokenConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
-public class Storage {
+import static org.raf.utils.Utils.*;
+
+public abstract class Storage {
     private String path;
     private Configuration configuration;
 
@@ -86,5 +90,42 @@ public class Storage {
                 "path='" + path + '\'' +
                 ", configuration=" + configuration +
                 '}';
+    }
+
+    public boolean extensionCheck(List<SpecFile> files) {
+        for(SpecFile file:files) {
+            List<String> forbiddenExtensions = this.getConfiguration().getForbiddenExtensions();
+            String extension = getExtension(file.getPath());
+            if(extension == null)
+                continue;
+            List<String> res = forbiddenExtensions.stream().filter(s -> s.equals(extension)).toList();
+            if(res.size() > 0)
+                return false;
+        }
+        return true;
+    }
+
+    protected abstract long getFileSize(String filePath);
+
+    protected abstract int getFileCount(String filePath);
+
+    public boolean fileSizeCheck(List<SpecFile> files) {
+        int maxByteSize = this.getConfiguration().getByteSize();
+        int totalNewSize = 0;
+        for(SpecFile specFile:files) {
+            totalNewSize += getFileSize(specFile.getPath());
+            if(totalNewSize + getFileSize(this.getPath()) > maxByteSize)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean fileCountCheck(String dirPath, int cntNewFiles){
+        int maxFileCount;
+        if(comparePaths(dirPath, this.getPath()))
+            maxFileCount = this.getConfiguration().getGlobalFileCount();
+        else
+            maxFileCount = this.getConfiguration().getFileCountForDir(dirPath);
+        return maxFileCount == -1 || getFileCount(dirPath) + cntNewFiles <= maxFileCount;
     }
 }
