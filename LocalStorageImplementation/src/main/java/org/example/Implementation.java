@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -122,7 +123,10 @@ public class Implementation extends FileManager{
     @Override
     public boolean containsFile(String dirPath, List<String> fileNames) {
         File f = new File(dirPath);
-        List<String> fileNamesInDir = List.of(f.list());
+        String [] fileList = f.list();
+        if(fileList == null)
+            throw new RuntimeException();
+        List<String> fileNamesInDir = List.of((fileList));
         for(String fileName : fileNames){
             if(!fileNamesInDir.contains(fileName)) return false;
         }
@@ -135,49 +139,89 @@ public class Implementation extends FileManager{
         return dfs(path,s);
     }
     @Override
-    public void sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
-        //ESortingOrder order = sortingCriteria.getSortingOrder();
-
+    public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
+        ESortingOrder order = sortingCriteria.getSortingOrder();
+        if (order.equals(ESortingOrder.DESCENDING)){
+            files.sort(new SpecFIleComparator(sortingCriteria).reversed());
+        }
+        else{
+            files.sort(new SpecFIleComparator(sortingCriteria));
+        }
+        return files;
     }
 
     @Override
-    public List<SpecFile> returnModifiedFiles(String s, String s1, String s2) {
-        return null;
+    public List<SpecFile> returnFilesModifiedDuringPeriod(FileTime startDate, FileTime endDate, String path) throws Exception {
+        List<SpecFile> files = returnDirectoryFiles(path);
+        List<SpecFile> returnList = new ArrayList<>();
+        for(SpecFile sf : files){
+            if(inPeriod(sf.getDateModified(), startDate, endDate)){
+                returnList.add(sf);
+            }
+        }
+        return returnList;
+    }
+
+    @Override
+    public List<SpecFile> returnFilesCreatedDuringPeriod(FileTime startDate, FileTime endDate, String path) throws Exception {
+        List<SpecFile> files = returnDirectoryFiles(path);
+        List<SpecFile> returnList = new ArrayList<>();
+        for(SpecFile sf : files){
+            if(inPeriod(sf.getDateCreated(), startDate, endDate)){
+                returnList.add(sf);
+            }
+        }
+        return returnList;
+    }
+
+    private boolean inPeriod(FileTime a, FileTime b1, FileTime b2){
+        return a.compareTo(b1) >= 0 && a.compareTo(b2) <= 0;
     }
 
     @Override
     public List<String> returnFileName(List<SpecFile> list) {
-        return null;
+        List<String> fileNames = new ArrayList<>();
+        for(SpecFile sf: list) fileNames.add(sf.getFileName());
+        return fileNames;
     }
 
     @Override
     public List<String> returnFilePath(List<SpecFile> list) {
-        return null;
+        List<String> filePaths = new ArrayList<>();
+        for(SpecFile sf: list) filePaths.add(sf.getPath());
+        return filePaths;
     }
 
     @Override
     public List<FileTime> returnDateCreated(List<SpecFile> list) {
-        return null;
+        List<FileTime> creationDates = new ArrayList<>();
+        for(SpecFile sf: list) creationDates.add(sf.getDateCreated());
+        return creationDates;
     }
 
     @Override
     public List<FileTime> returnDateMModified(List<SpecFile> list) {
-        return null;
+        List<FileTime> modificationDates = new ArrayList<>();
+        for(SpecFile sf: list) modificationDates.add(sf.getDateModified());
+        return modificationDates;
+
     }
 
     @Override
     public List<Boolean> returnIfDepository(List<SpecFile> list) {
-        return null;
+        List<Boolean> booleans = new ArrayList<>();
+        for(SpecFile sf: list) booleans.add(sf.isDirectory());
+        return booleans;
+
     }
 
-    private  List<SpecFile> listSort(SortingCriteria sortingCriteria, List<SpecFile> files){
-        Comparator<SpecFile> compareByName;
-        return files;
-    }
 
     private String dfs(String path, String name){
         File f = new File(path);
-        List<String> fileNames = List.of(f.list());
+        String [] fileList = f.list();
+        if(fileList == null)
+            throw new RuntimeException();
+        List<String> fileNames = List.of(fileList);
         if (fileNames.contains(name)) return formatPath(path,name);
         else {
             for(String name2 : fileNames){

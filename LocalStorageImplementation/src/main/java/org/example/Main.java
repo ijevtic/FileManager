@@ -10,6 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Implementation im = new Implementation();
+        im.createStorage("home/ijevtic/Desktop", "S1");
 //        im.loadStorage("/home/ijevtic/Desktop/PredefinedName");
 //        File f = new File(im.getStorage().getPath());
 //        im.createDirectory(im.getStorage().getPath(), "abc{1-20}d");

@@ -47,8 +47,9 @@ interface IFileManager {
     List<SpecFile> returnAllDirectoryFiles(String directoryPath, List<String> extension, String substring) throws Exception;
     boolean containsFile(String directoryPath, List<String> fileName) throws Exception;
     String returnFileLocation(String folderPath) throws Exception;
-    void sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) throws Exception;
-    List<SpecFile> returnModifiedFiles(String startDate, String endDate, String directoryPath) throws Exception;
+    List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) throws Exception;
+    List<SpecFile> returnFilesModifiedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
+    List<SpecFile> returnFilesCreatedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
 
     //Wrapper methods
     List<String> returnFileName(List<SpecFile> files);
