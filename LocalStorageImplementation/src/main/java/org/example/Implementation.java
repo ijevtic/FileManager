@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class Implementation extends FileManager{
         String storagePath = formatPath(rootPath, name);
         createDir(storagePath);
 
-        setStorage(new StorageImpl(storagePath, configuration));
+        setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation()));
         try {
             getStorage().updateConfiguration();
 
@@ -63,6 +62,7 @@ public class Implementation extends FileManager{
     @Override
     public void loadStorage(String path) throws IOException, BrokenConfigurationException {
         Storage s = new StorageImpl(path);
+        s.setFileHandler(new FileHandlerImplementation());
         s.readConfiguration();
         setStorage(s);
         System.out.println(getStorage());

@@ -1,10 +1,16 @@
 package org.raf.specification;
 
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.IllegalDestinationException;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
+
+import static org.raf.utils.Utils.formatPath;
+import static org.raf.utils.Utils.isAncestor;
 
 public abstract class FileManager {
 
@@ -29,7 +35,6 @@ public abstract class FileManager {
     public abstract void removeFile(SpecFile file) throws Exception;
     public abstract void removeFiles(String[] files) throws Exception;
     public abstract void removeFiles(SpecFile[] files) throws Exception;
-    public abstract void moveFile(SpecFile file, SpecFile destination) throws Exception;
     public abstract void moveFile(SpecFile file, String destinationPath) throws Exception;
     public abstract void moveFile(String filePath, String destinationPath) throws Exception;
     public abstract void moveFiles(List<String> files, String destinationPath) throws Exception;
@@ -68,6 +73,23 @@ public abstract class FileManager {
 
     public void setStorage(Storage storage) {
         this.storage = storage;
+    }
+
+    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
+        if(!isAncestor(getStorage().getPath(), destination.getPath())) {
+            throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
+        }
+        if(!getStorage().fileCountCheck(destination.getPath(), 1)) {
+            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
+        }
+        try {
+            String destinationPath = formatPath(destination.getPath(), file.getFileName());
+//            Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
+            getStorage().getFileHandler().move();
+            getStorage().getConfiguration().moveCountForDir(file.getPath(), destinationPath);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
 }

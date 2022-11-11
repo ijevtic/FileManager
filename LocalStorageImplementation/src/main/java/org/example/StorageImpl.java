@@ -1,6 +1,7 @@
 package org.example;
 
 import org.raf.specification.Configuration;
+import org.raf.specification.FileHandler;
 import org.raf.specification.Storage;
 
 import java.io.File;
@@ -18,6 +19,10 @@ public class StorageImpl extends Storage {
 
     public StorageImpl(String path, Configuration configuration) {
         super(path, configuration);
+    }
+
+    public StorageImpl(String path, Configuration configuration, FileHandler fileHandler) {
+        super(path, configuration, fileHandler);
     }
 
     @Override

@@ -80,4 +80,12 @@ public class Utils {
         return removeSlash(path1).equals(removeSlash(path2));
     }
 
+    public static String formatPath(String prefixPath, String fileName) {
+        String path = prefixPath;
+        if(path.charAt(path.length()-1) != '/')
+            path += '/';
+        path += fileName;
+        return path;
+    }
+
 }

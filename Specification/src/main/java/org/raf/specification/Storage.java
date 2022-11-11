@@ -14,6 +14,7 @@ import static org.raf.utils.Utils.*;
 public abstract class Storage {
     private String path;
     private Configuration configuration;
+    private FileHandler fileHandler;
 
     private volatile static Storage instance = null;
     public Storage() {}
@@ -24,6 +25,20 @@ public abstract class Storage {
     public Storage(String path, Configuration configuration) {
         this.path = path;
         this.configuration = configuration;
+    }
+
+    public Storage(String path, Configuration configuration, FileHandler fileHandler) {
+        this.path = path;
+        this.configuration = configuration;
+        this.fileHandler = fileHandler;
+    }
+
+    public FileHandler getFileHandler() {
+        return fileHandler;
+    }
+
+    public void setFileHandler(FileHandler fileHandler) {
+        this.fileHandler = fileHandler;
     }
 
     public String getPath() {
