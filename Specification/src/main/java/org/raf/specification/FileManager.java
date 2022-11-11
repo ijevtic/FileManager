@@ -52,7 +52,7 @@ public abstract class FileManager {
     public abstract List<SpecFile> returnAllDirectoryFiles(String directoryPath, List<String> extension, String substring) throws Exception;
     public abstract boolean containsFile(String directoryPath, List<String> fileName) throws Exception;
     public abstract String returnFileLocation(String folderPath) throws Exception;
-    public abstract void sortFiles(SortingCriteria sortingCriteria) throws Exception;
+    public abstract void sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) throws Exception;
     public abstract List<SpecFile> returnModifiedFiles(String startDate, String endDate, String directoryPath) throws Exception;
 
     //Wrapper methods

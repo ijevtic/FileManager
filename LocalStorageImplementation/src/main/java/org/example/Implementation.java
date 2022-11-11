@@ -14,11 +14,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
 import static org.example.Utils.ConfigurationCheck.*;
 import static org.example.Constants.*;
+import static org.example.Utils.StringUtils.getExtension;
 import static org.example.Utils.StringUtils.getParentPath;
 
 public class Implementation extends FileManager{
@@ -314,19 +316,21 @@ public class Implementation extends FileManager{
     @Override
     public boolean containsFile(String dirPath, List<String> fileNames) {
         File f = new File(dirPath);
-        String[] fileNamesInDir = f.list();
+        List<String> fileNamesInDir = List.of(f.list());
         for(String fileName : fileNames){
-            if()
+            if(!fileNamesInDir.contains(fileName)) return false;
         }
+        return true;
     }
 
     @Override
     public String returnFileLocation(String s) {
-        return null;
+        String path = getStorage().getPath();
+        return dfs(path,s);
     }
-
     @Override
-    public void sortFiles(SortingCriteria sortingCriteria) {
+    public void sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
+        //ESortingOrder order = sortingCriteria.getSortingOrder();
 
     }
 
@@ -357,6 +361,24 @@ public class Implementation extends FileManager{
 
     @Override
     public List<Boolean> returnIfDepository(List<SpecFile> list) {
+        return null;
+    }
+
+    private  List<SpecFile> listSort(SortingCriteria sortingCriteria, List<SpecFile> files){
+        Comparator<SpecFile> compareByName;
+        return files;
+    }
+
+    private String dfs(String path, String name){
+        File f = new File(path);
+        List<String> fileNames = List.of(f.list());
+        if (fileNames.contains(name)) return formatPath(path,name);
+        else {
+            for(String name2 : fileNames){
+                String path2 = formatPath(path, name2);
+                dfs(path2, name);
+            }
+        }
         return null;
     }
 
@@ -392,10 +414,6 @@ public class Implementation extends FileManager{
             if(fileName.contains(substring)){returnList.add(sf);}
         }
         return returnList;
-    }
-    public String getExtension (String fileName){
-        String[] parts = fileName.split(".");
-        return parts[parts.length -1];
     }
 
     public List<SpecFile> filesWithRightExtension (List<SpecFile> specFiles, List<String> extensions){
