@@ -1,17 +1,18 @@
 package org.example;
 
 import org.raf.exceptions.BrokenConfigurationException;
-import org.raf.exceptions.IllegalDestinationException;
 import org.raf.specification.*;
-import org.raf.utils.Utils;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.raf.utils.Utils.*;
 
@@ -39,90 +40,6 @@ public class Implementation extends FileManager{
         setStorage(s);
         System.out.println(getStorage());
     }
-
-    @Override
-    public void addFiles(List<SpecFile> fileList, String destinationPath) throws Exception{
-        if(!getStorage().fileCountCheck(destinationPath, fileList.size())
-        || !getStorage().extensionCheck(fileList)
-        || !getStorage().fileSizeCheck(fileList)) {
-            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
-        }
-        for(SpecFile f : fileList) {
-            if(!isAncestor(getStorage().getPath(), destinationPath) || isAncestor(getStorage().getPath(), f.getPath())) {
-                throw new IllegalDestinationException("Illegal destination " + f.getPath() + " " + destinationPath);
-            }
-            try {
-                getStorage().getFileHandler().copy(f, new SpecFile(destinationPath));
-            } catch (IOException e) {
-                throw new Exception(e);
-            }
-        }
-    }
-
-    @Override
-    public void removeFile(String filePath) throws Exception{
-        removeFile(new SpecFile(filePath));
-    }
-
-    @Override
-    public void removeFile(SpecFile file) throws Exception{
-        try {
-            Files.delete(Paths.get(file.getPath()));
-            getStorage().getConfiguration().removeCountForDir(file.getPath());
-        } catch (IOException e) {
-            throw new Exception(e);
-        }
-    }
-
-    @Override
-    public void removeFiles(String[] list) throws Exception{
-        for(String path: list) {
-            removeFile(new SpecFile(path));
-        }
-    }
-
-    @Override
-    public void removeFiles(SpecFile[] list) throws Exception{
-        for(SpecFile file: list) {
-            removeFile(file);
-        }
-    }
-
-    @Override
-    public void download(SpecFile source, SpecFile destination) throws Exception{
-        if(isAncestor(getStorage().getPath(), destination.getPath())) {
-            throw new IllegalDestinationException("Illegal destination " + source.getPath() + " " + destination.getPath());
-        }
-        try {
-            getStorage().getFileHandler().copy(source, destination);
-        } catch (IOException e) {
-            throw new Exception(e);
-        }
-    }
-
-    @Override
-    public void download(SpecFile source, String destinationPath) throws Exception{
-        download(source, new SpecFile(destinationPath));
-    }
-
-    @Override
-    public void download(String sourcePath, String destinationPath) throws Exception{
-        download(new SpecFile(sourcePath), new SpecFile(destinationPath));
-    }
-
-    @Override
-    public boolean rename(SpecFile file, String newName) {
-        File oldFile = new File(file.getPath());
-        File newFile = new File(getParentPath(file.getPath())+newName);
-        getStorage().getConfiguration().moveCountForDir(oldFile.getPath(), newFile.getPath());
-        return oldFile.renameTo(newFile);
-    }
-
-    @Override
-    public boolean rename(String sourcePath, String newName) {
-        return rename(new SpecFile(sourcePath), newName);
-    }
-
 
     @Override
     public List<SpecFile> returnDirectoryFiles(String s)throws Exception {
