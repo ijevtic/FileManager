@@ -2,6 +2,7 @@ package org.raf.specification;
 
 import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.IllegalDestinationException;
+import org.raf.utils.Utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,73 +10,82 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 
+import static org.raf.utils.Constants.*;
 import static org.raf.utils.Utils.formatPath;
 import static org.raf.utils.Utils.isAncestor;
 
-public abstract class FileManager {
+public abstract class FileManager implements IFileManager{
 
     private Storage storage = null;
 
-    /**
-     * Creates an empty folder, this is the root folder of the storage
-     */
-    public abstract void createStorage() throws Exception;
-    public abstract void createStorage(String path, String name) throws Exception;
-    public abstract void createStorage(String name) throws Exception;
-    public abstract void createStorage(Configuration c) throws Exception;
-    public abstract void createStorage(Configuration c, String name) throws Exception;
-    public abstract void createStorage(Configuration c, String rootPath, String name) throws Exception;
-    public abstract void loadStorage(String path) throws IOException, BrokenConfigurationException;
-    public abstract void createDirectory(String rootPath) throws Exception;
-    public abstract void createDirectory(String rootPath, int fileCount) throws Exception;
-    public abstract void createDirectory(String rootPath, String pattern) throws Exception;
-    public abstract void createDirectory(String rootPath, String pattern, int maxFileCount) throws Exception;
-    public abstract void addFiles(List<SpecFile> files, String destination) throws Exception;
-    public abstract void removeFile(String path) throws Exception;
-    public abstract void removeFile(SpecFile file) throws Exception;
-    public abstract void removeFiles(String[] files) throws Exception;
-    public abstract void removeFiles(SpecFile[] files) throws Exception;
-    public abstract void moveFile(SpecFile file, String destinationPath) throws Exception;
-    public abstract void moveFile(String filePath, String destinationPath) throws Exception;
-    public abstract void moveFiles(List<String> files, String destinationPath) throws Exception;
-    public abstract void download(SpecFile path, SpecFile destinationPath) throws Exception;
-    public abstract void download(SpecFile path, String destinationPath) throws Exception;
-    public abstract void download(String path, String destinationPath) throws Exception;
-    public abstract boolean rename(SpecFile file, String newName)throws Exception;
-    public abstract boolean rename(String sourcePath, String newName) throws Exception;
-    public abstract List<SpecFile> returnDirectoryFiles(String directoryPath) throws Exception;
-    public abstract List<SpecFile> returnDirectoryFiles(String directoryPath, String substring) throws Exception;
-    public abstract List<SpecFile> returnDirectoryFiles(String directoryPath, List<String> extensions) throws Exception;
-    public abstract List<SpecFile> returnDirectoryFiles(String directoryPath, List<String> extensions, String substring) throws Exception;
-    public abstract List<SpecFile> returnSubdirectoryFile(String directoryPath) throws Exception;
-    public abstract List<SpecFile> returnSubdirectoryFile(String directoryPath, String substring) throws Exception;
-    public abstract List<SpecFile> returnSubdirectoryFile(String directoryPath, List<String> extension) throws Exception;
-    public abstract List<SpecFile> returnSubdirectoryFile(String directoryPath, List<String> extension, String substring) throws Exception;
-    public abstract List<SpecFile> returnAllDirectoryFiles(String directoryPath) throws Exception;
-    public abstract List<SpecFile> returnAllDirectoryFiles(String directoryPath, String substring) throws Exception;
-    public abstract List<SpecFile> returnAllDirectoryFiles(String directoryPath, List<String> extension) throws Exception;
-    public abstract List<SpecFile> returnAllDirectoryFiles(String directoryPath, List<String> extension, String substring) throws Exception;
-    public abstract boolean containsFile(String directoryPath, List<String> fileName) throws Exception;
-    public abstract String returnFileLocation(String folderPath) throws Exception;
-    public abstract List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) throws Exception;
-    public abstract List<SpecFile> returnFilesModifiedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
-    public abstract List<SpecFile> returnFilesCreatedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
-
-    //Wrapper methods
-    public abstract List<String> returnFileName(List<SpecFile> files);
-    public abstract List<String> returnFilePath(List<SpecFile> files);
-    public abstract List<FileTime> returnDateCreated(List<SpecFile> files);
-    public abstract List<FileTime> returnDateMModified(List<SpecFile> files);
-    public abstract List<Boolean> returnIfDepository(List<SpecFile> files);
-    //End of Wrapper methods
-    public Storage getStorage() {
-        return storage;
+    @Override
+    public void createStorage() throws Exception {
+        createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    @Override
+    public void createStorage(String path, String name) throws Exception {
+        createStorage(CONFIGURATION, path, name);
     }
 
+    @Override
+    public void createStorage(String name) throws Exception {
+        createStorage(CONFIGURATION, STORAGE_PATH, name);
+    }
+
+    @Override
+    public void createStorage(Configuration configuration) throws Exception {
+        createStorage(configuration, STORAGE_PATH, STORAGE_NAME);
+    }
+
+    @Override
+    public void createStorage(Configuration configuration, String name) throws Exception {
+        createStorage(configuration, STORAGE_PATH, name);
+    }
+
+    @Override
+    public void createDirectory(String rootPath) throws BrokenConfigurationException {
+        createDirectory(rootPath, -1);
+    }
+
+    @Override
+    public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException {
+        if(!getStorage().fileCountCheck(rootPath, 1)) {
+            throw new BrokenConfigurationException("Broken exception for file " + rootPath);
+        }
+        createAndStoreDirectory(formatPath(rootPath, "dir"), maxFileCount);
+    }
+
+    @Override
+    public void createDirectory(String rootPath, String pattern) throws Exception{
+        createDirectory(rootPath, pattern, -1);
+    }
+
+    @Override
+    public void createDirectory(String rootPath, String pattern, int maxFileCount) throws Exception {
+        List<String> dirNames = Utils.dirNamesFromPattern(pattern);
+        if(!getStorage().fileCountCheck(rootPath, dirNames.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + rootPath);
+        }
+        for(String name: dirNames) {
+            createAndStoreDirectory(formatPath(rootPath, name), maxFileCount);
+        }
+    }
+
+    private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException {
+        if(!getStorage().getFileHandler().createDirectory(path))
+            return;
+        if(maxFileCount < 0)
+            return;
+        getStorage().getConfiguration().addCountForDir(path, maxFileCount);
+        try {
+            getStorage().updateConfiguration();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
         if(!isAncestor(getStorage().getPath(), destination.getPath())) {
             throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
@@ -86,11 +96,41 @@ public abstract class FileManager {
         try {
             String destinationPath = formatPath(destination.getPath(), file.getFileName());
 //            Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
-            getStorage().getFileHandler().move();
+            getStorage().getFileHandler().move(file, destination);
             getStorage().getConfiguration().moveCountForDir(file.getPath(), destinationPath);
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    @Override
+    public void moveFile(SpecFile file, String destination) throws Exception {
+        moveFile(file, new SpecFile(destination));
+    }
+
+    @Override
+    public void moveFile(String path, String destinationPath) throws Exception{
+        moveFile(new SpecFile(path), new SpecFile(destinationPath));
+    }
+
+    @Override
+    public void moveFiles(List<String> list, String destinationPath) throws Exception {
+        if(!getStorage().fileCountCheck(destinationPath, list.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
+        }
+        for(String path: list) {
+            moveFile(new SpecFile(path), new SpecFile(destinationPath));
+        }
+    }
+
+
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
 }
