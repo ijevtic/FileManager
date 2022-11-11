@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.raf.utils.Utils.formatPath;
+import static org.raf.utils.Utils.getParentPath;
 
 public class FileHandlerImplementation extends FileHandler {
     @Override
@@ -41,5 +42,17 @@ public class FileHandlerImplementation extends FileHandler {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean rename(SpecFile file, String newName) {
+        File oldFile = new File(file.getPath());
+        File newFile = new File(getParentPath(file.getPath())+newName);
+        return oldFile.renameTo(newFile);
+    }
+
+    @Override
+    public void delete(SpecFile file) throws IOException {
+        Files.delete(Paths.get(file.getPath()));
     }
 }

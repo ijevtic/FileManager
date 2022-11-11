@@ -11,8 +11,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import static org.raf.utils.Constants.*;
-import static org.raf.utils.Utils.formatPath;
-import static org.raf.utils.Utils.isAncestor;
+import static org.raf.utils.Utils.*;
 
 public abstract class FileManager implements IFileManager{
 
@@ -123,6 +122,88 @@ public abstract class FileManager implements IFileManager{
         }
     }
 
+    @Override
+    public void addFiles(List<SpecFile> fileList, String destinationPath) throws Exception{
+        if(!getStorage().fileCountCheck(destinationPath, fileList.size())
+                || !getStorage().extensionCheck(fileList)
+                || !getStorage().fileSizeCheck(fileList)) {
+            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
+        }
+        for(SpecFile f : fileList) {
+            if(!isAncestor(getStorage().getPath(), destinationPath) || isAncestor(getStorage().getPath(), f.getPath())) {
+                throw new IllegalDestinationException("Illegal destination " + f.getPath() + " " + destinationPath);
+            }
+            try {
+                getStorage().getFileHandler().copy(f, new SpecFile(destinationPath));
+            } catch (IOException e) {
+                throw new Exception(e);
+            }
+        }
+    }
+
+    @Override
+    public void download(SpecFile source, SpecFile destination) throws Exception{
+        if(isAncestor(getStorage().getPath(), destination.getPath())) {
+            throw new IllegalDestinationException("Illegal destination " + source.getPath() + " " + destination.getPath());
+        }
+        try {
+            getStorage().getFileHandler().copy(source, destination);
+        } catch (IOException e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public void download(SpecFile source, String destinationPath) throws Exception{
+        download(source, new SpecFile(destinationPath));
+    }
+
+    @Override
+    public void download(String sourcePath, String destinationPath) throws Exception{
+        download(new SpecFile(sourcePath), new SpecFile(destinationPath));
+    }
+
+    @Override
+    public void removeFile(String filePath) throws Exception{
+        removeFile(new SpecFile(filePath));
+    }
+
+    @Override
+    public void removeFile(SpecFile file) throws Exception{
+        try {
+            getStorage().getFileHandler().delete(file);
+            getStorage().getConfiguration().removeCountForDir(file.getPath());
+        } catch (IOException e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public void removeFiles(String[] list) throws Exception{
+        for(String path: list) {
+            removeFile(new SpecFile(path));
+        }
+    }
+
+    @Override
+    public void removeFiles(SpecFile[] list) throws Exception{
+        for(SpecFile file: list) {
+            removeFile(file);
+        }
+    }
+
+    @Override
+    public boolean rename(SpecFile file, String newName) {
+        if(!getStorage().getFileHandler().rename(file, newName))
+            return false;
+        getStorage().getConfiguration().moveCountForDir(file.getPath(), getParentPath(file.getPath())+newName);
+        return true;
+    }
+
+    @Override
+    public boolean rename(String sourcePath, String newName) {
+        return rename(new SpecFile(sourcePath), newName);
+    }
 
 
     public Storage getStorage() {
