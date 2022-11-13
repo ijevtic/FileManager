@@ -4,10 +4,12 @@ import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.IllegalDestinationException;
 import org.raf.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.raf.utils.Constants.*;
@@ -203,6 +205,170 @@ public abstract class FileManager implements IFileManager{
     @Override
     public boolean rename(String sourcePath, String newName) {
         return rename(new SpecFile(sourcePath), newName);
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, String s1) throws Exception{
+        return returnFilesWithSubstring(returnDirectoryFiles(s), s1);
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, List<String> extensions) throws Exception {
+        List<SpecFile> specFiles = returnDirectoryFiles(s);
+        return filesWithRightExtension(specFiles,extensions);
+    }
+
+    @Override
+    public List<SpecFile> returnDirectoryFiles(String s, List<String> extensions, String s1) throws Exception {
+        return filesWithRightExtension(returnFilesWithSubstring(returnDirectoryFiles(s), s1), extensions);
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s) throws Exception {
+        List<SpecFile> directoryFiles = returnDirectoryFiles(s);
+        List<SpecFile> subdirectoryFiles = new ArrayList<>();
+        for(SpecFile sf : directoryFiles){
+            subdirectoryFiles.addAll(returnDirectoryFiles(sf.getPath()));
+        }
+        return subdirectoryFiles;
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, String substring) throws Exception {
+        return returnFilesWithSubstring(returnSubdirectoryFile(s), substring);
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, List<String> extensions) throws Exception {
+        return filesWithRightExtension(returnSubdirectoryFile(s), extensions);
+    }
+
+    @Override
+    public List<SpecFile> returnSubdirectoryFile(String s, List<String> extensions, String substring) throws Exception {
+        return filesWithRightExtension(returnFilesWithSubstring(returnSubdirectoryFile(s), substring), extensions);
+
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s) throws Exception {
+        List<SpecFile> specFiles = returnDirectoryFiles(s);
+        List<SpecFile> returnList = new ArrayList<>(specFiles);
+        for(SpecFile sf : specFiles){
+            returnList.addAll(returnDirectoryFiles(sf.getPath()));
+        }
+        return returnList;
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String path, String substring) throws Exception {
+        return returnFilesWithSubstring(returnDirectoryFiles(path), substring);
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s, List<String> extensions) throws Exception {
+        return filesWithRightExtension(returnAllDirectoryFiles(s), extensions);
+    }
+
+    @Override
+    public List<SpecFile> returnAllDirectoryFiles(String s, List<String> extensions, String substring) throws Exception {
+        return filesWithRightExtension(returnFilesWithSubstring(returnAllDirectoryFiles(s), substring), extensions);
+    }
+
+    @Override
+    public boolean containsFile(String dirPath, List<String> fileNames) throws Exception {
+        List<SpecFile> filesInDir = returnDirectoryFiles(dirPath);
+        List<String> fileNamesInDir = new ArrayList<>();
+        for(SpecFile sf: filesInDir){
+            fileNamesInDir.add(sf.getFileName());
+        }
+        for(String fileName : fileNames){
+            if(!fileNamesInDir.contains(fileName)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String returnFileLocation(String s) throws Exception {
+        String path = getStorage().getPath();
+        return dfs(path,s);
+    }
+
+    @Override
+    public List<String> returnFileName(List<SpecFile> list) {
+        List<String> fileNames = new ArrayList<>();
+        for(SpecFile sf: list) fileNames.add(sf.getFileName());
+        return fileNames;
+    }
+
+    @Override
+    public List<String> returnFilePath(List<SpecFile> list) {
+        List<String> filePaths = new ArrayList<>();
+        for(SpecFile sf: list) filePaths.add(sf.getPath());
+        return filePaths;
+    }
+
+    @Override
+    public List<FileTime> returnDateCreated(List<SpecFile> list) {
+        List<FileTime> creationDates = new ArrayList<>();
+        for(SpecFile sf: list) creationDates.add(sf.getDateCreated());
+        return creationDates;
+    }
+
+    @Override
+    public List<FileTime> returnDateMModified(List<SpecFile> list) {
+        List<FileTime> modificationDates = new ArrayList<>();
+        for(SpecFile sf: list) modificationDates.add(sf.getDateModified());
+        return modificationDates;
+
+    }
+
+    @Override
+    public List<Boolean> returnIfDepository(List<SpecFile> list) {
+        List<Boolean> booleans = new ArrayList<>();
+        for(SpecFile sf: list) booleans.add(sf.isDirectory());
+        return booleans;
+
+    }
+
+
+    public List<SpecFile> returnFilesWithSubstring(List<SpecFile> specFiles, String substring){
+        List<SpecFile> returnList = new ArrayList<>();
+        for(SpecFile sf : specFiles){
+            String fileName = sf.getFileName();
+            if(fileName.contains(substring)){returnList.add(sf);}
+        }
+        return returnList;
+    }
+
+
+    public List<SpecFile> filesWithRightExtension (List<SpecFile> specFiles, List<String> extensions){
+        List<SpecFile> returnList = new ArrayList<>();
+        for (SpecFile sf : specFiles){
+            String extension = getExtension(sf.getFileName());
+            if (extensions.contains(extension)){ returnList.add(sf);}
+        }
+        return returnList;
+    }
+
+    private String dfs(String path, String name) throws Exception {
+        String newPath = null;
+        List<SpecFile> fileList = returnDirectoryFiles(path);
+        List<String> fileNamesInDir = new ArrayList<>();
+//        if(fileList == null)
+//            throw new RuntimeException();
+        if(fileList != null){
+            for(SpecFile sf : fileList){ fileNamesInDir.add(sf.getFileName());}
+            if (fileNamesInDir.contains(name)) return formatPath(path,name);
+            else {
+                for(String name2 : fileNamesInDir){
+                    String path2 = formatPath(path, name2);
+                    newPath = dfs(path2, name);
+                    if (newPath != null) return newPath;
+                }
+            }
+        }
+
+        return null;
     }
 
 
