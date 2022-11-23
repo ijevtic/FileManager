@@ -126,6 +126,43 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
+    public void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
+        if(!isAncestor(getStorage().getPath(), destination.getPath())) {
+            throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
+        }
+        if(!getStorage().fileCountCheck(destination.getPath(), 1)) {
+            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
+        }
+        try {
+            String destinationPath = formatPath(destination.getPath(), file.getFileName());
+            getStorage().getFileHandler().copy(file, destination);
+            getStorage().getConfiguration().copyCountForDir(file.getPath(), destinationPath);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void copyFile(SpecFile file, String destination) throws Exception {
+        copyFile(file, new SpecFile(destination));
+    }
+
+    @Override
+    public void copyFile(String path, String destinationPath) throws Exception{
+        moveFile(new SpecFile(path), new SpecFile(destinationPath));
+    }
+
+    @Override
+    public void copyFiles(List<String> list, String destinationPath) throws Exception {
+        if(!getStorage().fileCountCheck(destinationPath, list.size())) {
+            throw new BrokenConfigurationException("Broken exception for file " + destinationPath);
+        }
+        for(String path: list) {
+            moveFile(new SpecFile(path), new SpecFile(destinationPath));
+        }
+    }
+
+    @Override
     public void addFiles(List<SpecFile> fileList, String destinationPath) throws Exception{
         if(!getStorage().fileCountCheck(destinationPath, fileList.size())
                 || !getStorage().extensionCheck(fileList)

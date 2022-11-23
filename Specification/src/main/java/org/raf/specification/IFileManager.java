@@ -28,6 +28,10 @@ interface IFileManager {
     void moveFile(SpecFile file, String destinationPath) throws Exception;
     void moveFile(String filePath, String destinationPath) throws Exception;
     void moveFiles(List<String> files, String destinationPath) throws Exception;
+    void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException;
+    void copyFile(SpecFile file, String destinationPath) throws Exception;
+    void copyFile(String filePath, String destinationPath) throws Exception;
+    void copyFiles(List<String> files, String destinationPath) throws Exception;
     void download(SpecFile path, SpecFile destinationPath) throws Exception;
     void download(SpecFile path, String destinationPath) throws Exception;
     void download(String path, String destinationPath) throws Exception;

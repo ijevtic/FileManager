@@ -90,6 +90,13 @@ public class Configuration {
         addCountForDir(newDirPath, val);
     }
 
+    public void copyCountForDir(String dirPath, String newDirPath) {
+        if(!mapFileCount.containsKey(dirPath))
+            return;
+        int val = mapFileCount.get(dirPath);
+        addCountForDir(newDirPath, val);
+    }
+
     public int getFileCountForDir(String path) {
         if(mapFileCount.containsKey(path))
             return mapFileCount.get(path);
