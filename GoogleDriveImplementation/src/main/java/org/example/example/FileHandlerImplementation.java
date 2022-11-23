@@ -20,13 +20,49 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
-    public void copy(SpecFile specFile, SpecFile specFile1) throws IOException {
+    public void copy(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+        File sourceFile = getFileFromPath(source.getPath());
+        String newParentId = getFileFromPath(destination.getPath()).getId();
+        File newFile = new File();
+        newFile.setParents(List.of(newParentId));
+        try {
+            // Copy the file to the new folder
+            service.files().copy(sourceFile.getId(), newFile)
+                .setFields("id, parents")
+                .execute();
 
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to copy a file: " + e.getDetails());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void move(SpecFile specFile, SpecFile specFile1) throws IOException {
+    public void move(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+        String sourceId = getFileFromPath(source.getPath()).getId();
+        String newParentId = getFileFromPath(destination.getPath()).getId();
+        File file = service.files().get(sourceId)
+                .setFields("parents")
+                .execute();
+        StringBuilder previousParents = new StringBuilder();
+        for (String parent : file.getParents()) {
+            previousParents.append(parent);
+            previousParents.append(',');
+        }
+        try {
+            // Move the file to the new folder
+            file = service.files().update(sourceId, null)
+                    .setAddParents(newParentId)
+                    .setRemoveParents(previousParents.toString())
+                    .setFields("id, parents")
+                    .execute();
 
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to move a file: " + e.getDetails());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -70,28 +106,16 @@ public class FileHandlerImplementation extends FileHandler {
         }
     }
 
-    private File uploadData(String path, String parentId) throws IOException {
-        File fileMetadata = new File();
-        fileMetadata.setName("upload data");
-        fileMetadata.setParents(List.of(parentId));
-        java.io.File filePath = new java.io.File(path);
-        FileContent content = new FileContent("", filePath);
-        try {
-            File file = service.files().create(fileMetadata, content)
-                    .setFields("id, parents")
-                    .execute();
-            System.out.println("File ID: " + file.getId());
-            return file;
-        } catch (GoogleJsonResponseException e) {
-            System.err.println("Unable to upload file: " + e.getDetails());
-            throw e;
-        }
-    }
-
-
     @Override
-    public void delete(SpecFile specFile) throws IOException {
-
+    public void delete(SpecFile specFile) throws IOException, FileNotFoundCustomException {
+        File sourceFile = getFileFromPath(specFile.getPath());
+        try {
+            service.files().delete(sourceFile.getId()).execute();
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to delete a file: " + e.getDetails());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private File getFileFromPath(String filePath) throws FileNotFoundCustomException {
@@ -126,5 +150,23 @@ public class FileHandlerImplementation extends FileHandler {
         }
         assert returnFile != null;
         return returnFile;
+    }
+
+    private File uploadData(String path, String parentId) throws IOException {
+        File fileMetadata = new File();
+        fileMetadata.setName("upload data");
+        fileMetadata.setParents(List.of(parentId));
+        java.io.File filePath = new java.io.File(path);
+        FileContent content = new FileContent("", filePath);
+        try {
+            File file = service.files().create(fileMetadata, content)
+                    .setFields("id, parents")
+                    .execute();
+            System.out.println("File ID: " + file.getId());
+            return file;
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to upload file: " + e.getDetails());
+            throw e;
+        }
     }
 }

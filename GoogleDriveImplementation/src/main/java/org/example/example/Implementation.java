@@ -21,10 +21,7 @@ public class Implementation extends FileManager {
     @Override
     public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, IOException {
         String storagePath = formatPath(rootPath, name);
-        System.out.println(rootPath);
-        System.out.println(name);
-        System.out.println(storagePath);
-//
+
         setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation(service)));
 //        getStorage().getFileHandler().createDirectory(storagePath);
 //        try {
