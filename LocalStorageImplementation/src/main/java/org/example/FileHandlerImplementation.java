@@ -1,5 +1,6 @@
 package org.example;
 
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.FileHandler;
 import org.raf.specification.SpecFile;
 
@@ -55,4 +56,11 @@ public class FileHandlerImplementation extends FileHandler {
     public void delete(SpecFile file) throws IOException {
         Files.delete(Paths.get(file.getPath()));
     }
+
+    @Override
+    public void addFiles(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+        copy(source, destination);
+    }
+
+
 }

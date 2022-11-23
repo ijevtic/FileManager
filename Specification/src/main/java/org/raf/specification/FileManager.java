@@ -174,7 +174,7 @@ public abstract class FileManager implements IFileManager{
                 throw new IllegalDestinationException("Illegal destination " + f.getPath() + " " + destinationPath);
             }
             try {
-                getStorage().getFileHandler().copy(f, new SpecFile(destinationPath));
+                getStorage().getFileHandler().addFiles(f, new SpecFile(destinationPath));
             } catch (IOException e) {
                 throw new Exception(e);
             }

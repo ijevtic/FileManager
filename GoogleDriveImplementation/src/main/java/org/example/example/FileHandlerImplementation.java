@@ -118,6 +118,25 @@ public class FileHandlerImplementation extends FileHandler {
         }
     }
 
+    @Override
+    public void addFiles(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+        String destId = getFileFromPath(destination.getPath()).getId();
+        File fileMetadata = new File();
+        fileMetadata.setName(Utils.getNameFromPath(source.getPath()));
+        fileMetadata.setParents(List.of(destId));
+        java.io.File filePath = new java.io.File(source.getPath());
+        FileContent content = new FileContent("", filePath);
+        try {
+            File file = service.files().create(fileMetadata, content)
+                    .setFields("id, parents")
+                    .execute();
+            System.out.println("File ID: " + file.getId());
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to upload file: " + e.getDetails());
+            throw e;
+        }
+    }
+
     private File getFileFromPath(String filePath) throws FileNotFoundCustomException {
         if(filePath.charAt(0) == '/') filePath = filePath.substring(1);
         if(filePath.charAt(filePath.length()-1) == '/') filePath = filePath.substring(0, filePath.length()-1);
@@ -150,23 +169,5 @@ public class FileHandlerImplementation extends FileHandler {
         }
         assert returnFile != null;
         return returnFile;
-    }
-
-    private File uploadData(String path, String parentId) throws IOException {
-        File fileMetadata = new File();
-        fileMetadata.setName("upload data");
-        fileMetadata.setParents(List.of(parentId));
-        java.io.File filePath = new java.io.File(path);
-        FileContent content = new FileContent("", filePath);
-        try {
-            File file = service.files().create(fileMetadata, content)
-                    .setFields("id, parents")
-                    .execute();
-            System.out.println("File ID: " + file.getId());
-            return file;
-        } catch (GoogleJsonResponseException e) {
-            System.err.println("Unable to upload file: " + e.getDetails());
-            throw e;
-        }
     }
 }
