@@ -1,6 +1,7 @@
 package org.example;
 
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.*;
 
 import java.io.File;
@@ -9,17 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-import static org.raf.utils.Utils.*;
 
 public class Implementation extends FileManager{
 
     @Override
-    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException{
+    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, FileNotFoundCustomException {
         String storagePath = formatPath(rootPath, name);
 
         setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation()));
