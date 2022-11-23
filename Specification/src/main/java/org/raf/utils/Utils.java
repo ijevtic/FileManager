@@ -10,7 +10,7 @@ public class Utils {
         List<String> names = new ArrayList<>();
         int indOpen = pattern.indexOf("{");
         int indClosed = pattern.lastIndexOf("}");
-        if(indClosed < indOpen) return List.of(pattern);
+        if(indClosed < indOpen || indClosed == -1 || indOpen == -1) return List.of(pattern);
         String prefix = pattern.substring(0, indOpen);
         String suffix = pattern.substring(indClosed+1);
         String inner = pattern.substring(indOpen+1, indClosed);
@@ -65,7 +65,7 @@ public class Utils {
         return path.substring(0, poz) + "/";
     }
 
-    private String getNameFromPath(String path) {
+    public static String getNameFromPath(String path) {
         if (path.charAt(path.length() - 1) == '/')
             path = path.substring(0, path.length() - 1);
         return path.substring(path.lastIndexOf("/") + 1);
@@ -82,10 +82,9 @@ public class Utils {
 
     public static String formatPath(String prefixPath, String fileName) {
         String path = prefixPath;
-        if(path.charAt(path.length()-1) != '/')
+        if (path.charAt(path.length() - 1) != '/')
             path += '/';
         path += fileName;
         return path;
     }
-
 }

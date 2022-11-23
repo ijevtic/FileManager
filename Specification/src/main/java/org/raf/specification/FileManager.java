@@ -1,6 +1,7 @@
 package org.raf.specification;
 
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.exceptions.IllegalDestinationException;
 import org.raf.utils.Utils;
 
@@ -45,12 +46,12 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public void createDirectory(String rootPath) throws BrokenConfigurationException {
+    public void createDirectory(String rootPath) throws BrokenConfigurationException, FileNotFoundCustomException {
         createDirectory(rootPath, -1);
     }
 
     @Override
-    public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException {
+    public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException, FileNotFoundCustomException {
         if(!getStorage().fileCountCheck(rootPath, 1)) {
             throw new BrokenConfigurationException("Broken exception for file " + rootPath);
         }
@@ -73,7 +74,7 @@ public abstract class FileManager implements IFileManager{
         }
     }
 
-    private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException {
+    private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException, FileNotFoundCustomException {
         if(!getStorage().getFileHandler().createDirectory(path))
             return;
         if(maxFileCount < 0)
@@ -195,7 +196,7 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public boolean rename(SpecFile file, String newName) {
+    public boolean rename(SpecFile file, String newName) throws FileNotFoundCustomException {
         if(!getStorage().getFileHandler().rename(file, newName))
             return false;
         getStorage().getConfiguration().moveCountForDir(file.getPath(), getParentPath(file.getPath())+newName);
@@ -203,7 +204,7 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public boolean rename(String sourcePath, String newName) {
+    public boolean rename(String sourcePath, String newName) throws FileNotFoundCustomException {
         return rename(new SpecFile(sourcePath), newName);
     }
 
