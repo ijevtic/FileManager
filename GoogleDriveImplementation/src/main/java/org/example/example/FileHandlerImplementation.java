@@ -11,6 +11,7 @@ import org.raf.specification.SpecFile;
 import org.raf.utils.Utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 public class FileHandlerImplementation extends FileHandler {
     private Drive service;
@@ -170,4 +171,34 @@ public class FileHandlerImplementation extends FileHandler {
         assert returnFile != null;
         return returnFile;
     }
+
+    @Override
+    public List<SpecFile> getFilesFromDir(String dirPath) throws FileNotFoundCustomException, IOException {
+
+        File dir = getFileFromPath(dirPath);
+        List<File> files = new ArrayList<File>();
+        String pageToken = null;
+        do {
+            FileList result = service.files().list()
+                    .setQ("trashed = false and '" + dir.getId() + "' in parents")
+                    .setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name, createdTime, modifiedTime, parents)")
+                    .setPageToken(pageToken)
+                    .execute();
+
+            files.addAll(result.getFiles());
+
+            pageToken = result.getNextPageToken();
+        } while (pageToken != null);
+        List<SpecFile> retList = new ArrayList<>();
+        for(File f:files) {
+            retList.add(new SpecFile(Utils.makePathFromParentPath(dirPath, f.getName()), f.getName(),
+                    GUtils.convertTime(f.getCreatedTime()), GUtils.convertTime(f.getModifiedTime()), false));
+        }
+        return retList;
+
+
+    }
+
+
 }

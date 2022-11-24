@@ -89,4 +89,10 @@ public class Utils {
         path += fileName;
         return path;
     }
+
+    public static String makePathFromParentPath(String parentPath, String fileName) {
+        if(parentPath.charAt(parentPath.length()-1) != '/')
+            parentPath += "/";
+        return parentPath + fileName;
+    }
 }

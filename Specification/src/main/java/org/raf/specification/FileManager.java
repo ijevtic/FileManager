@@ -248,6 +248,11 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
+    public List<SpecFile> returnDirectoryFiles(String s) throws Exception {
+        return getStorage().getFileHandler().getFilesFromDir(s);
+    }
+
+    @Override
     public List<SpecFile> returnDirectoryFiles(String s, String s1) throws Exception{
         return returnFilesWithSubstring(returnDirectoryFiles(s), s1);
     }

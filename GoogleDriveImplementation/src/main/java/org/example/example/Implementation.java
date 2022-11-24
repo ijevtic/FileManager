@@ -7,6 +7,7 @@ import org.raf.specification.*;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.example.example.GDriveConnection.getDriveService;
@@ -39,45 +40,6 @@ public class Implementation extends FileManager {
         s.readConfiguration();
         setStorage(s);
         System.out.println(getStorage());
-    }
-
-    @Override
-    public List<SpecFile> returnDirectoryFiles(String s)throws Exception {
-//        File f = new File(s);
-//        String[] fileNames = f.list();
-//        List<SpecFile> specFiles = new ArrayList<>();
-//        if(fileNames != null){
-//            for(String str : fileNames){
-//                String path = formatPath(s,str);
-//                BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
-//                specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
-//            }
-//        }
-//        if(fileNames == null)
-//            throw new RuntimeException();
-//        for(String str : fileNames){
-//            String path = formatPath(s,str);
-//            BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
-//            specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
-//        }
-
-//        return specFiles;
-        return null;
-    }
-
-    @Override
-    public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> list) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<SpecFile> returnFilesModifiedDuringPeriod(FileTime fileTime, FileTime fileTime1, String s) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<SpecFile> returnFilesCreatedDuringPeriod(FileTime fileTime, FileTime fileTime1, String s) throws Exception {
-        return null;
     }
 
     public Drive getService() {

@@ -7,8 +7,13 @@ import org.raf.specification.SpecFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.example.Utils.convertToLocalDateTime;
 import static org.raf.utils.Utils.formatPath;
 import static org.raf.utils.Utils.getParentPath;
 
@@ -60,6 +65,29 @@ public class FileHandlerImplementation extends FileHandler {
     @Override
     public void addFiles(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
         copy(source, destination);
+    }
+
+    @Override
+    public List<SpecFile> getFilesFromDir(String s) throws FileNotFoundCustomException, IOException {
+        File f = new File(s);
+        String[] fileNames = f.list();
+        List<SpecFile> specFiles = new ArrayList<>();
+        if(fileNames != null){
+            for(String str : fileNames){
+                String path = formatPath(s,str);
+                BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
+                specFiles.add(new SpecFile(path, str, convertToLocalDateTime(fileAttributes.creationTime()) , convertToLocalDateTime(fileAttributes.lastModifiedTime()), fileAttributes.isDirectory()));
+            }
+        }
+//        if(fileNames == null)
+//            throw new RuntimeException();
+//        for(String str : fileNames){
+//            String path = formatPath(s,str);
+//            BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
+//            specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
+//        }
+
+        return specFiles;
     }
 
 
