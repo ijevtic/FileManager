@@ -12,16 +12,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.example.Utils.convertToLocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Implementation im = new Implementation();
-        im.createStorage("home/ijevtic/Desktop", "S1");
+//        Implementation im = new Implementation();
+//        im.createStorage("home/ijevtic/Desktop", "S1");
 //        im.loadStorage("/home/ijevtic/Desktop/PredefinedName");
 //        File f = new File(im.getStorage().getPath());
 //        im.createDirectory(im.getStorage().getPath(), "abc{1-20}d");
 //        System.out.println(f.length());
-
+        List<SpecFile> files = returnDirectoryFiles("/home/nata/Desktop/test1");
+        for(SpecFile sf : files)
+            System.out.println(sf.getDateCreated());
     }
 
 //    private static String dfs(String path, String name){
@@ -51,27 +55,27 @@ public class Main {
 //        return subdirectoryFiles;
 //    }
 //
-//    private static String formatPath(String prefixPath, String fileName) {
-//        String path = prefixPath;
-//        if(path.charAt(path.length()-1) != '/')
-//            path += '/';
-//        path += fileName;
-//        return path;
-//    }
-//
-//    public static List<SpecFile> returnDirectoryFiles(String s)throws Exception {
-//        File f = new File(s);
-//        String[] fileNames = f.list();
-//        List<SpecFile> specFiles = new ArrayList<>();
-//        if(fileNames != null) {
-//            for (String str : fileNames) {
-//                String path = formatPath(s, str);
-//                BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
-//                specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
-//            }
-//        }
-//        return specFiles;
-//    }
+    private static String formatPath(String prefixPath, String fileName) {
+        String path = prefixPath;
+        if(path.charAt(path.length()-1) != '/')
+            path += '/';
+        path += fileName;
+        return path;
+    }
+
+    public static List<SpecFile> returnDirectoryFiles(String s)throws Exception {
+        File f = new File(s);
+        String[] fileNames = f.list();
+        List<SpecFile> specFiles = new ArrayList<>();
+        if(fileNames != null) {
+            for (String str : fileNames) {
+                String path = formatPath(s, str);
+                BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
+                specFiles.add(new SpecFile(path, str,convertToLocalDateTime(fileAttributes.creationTime()), convertToLocalDateTime(fileAttributes.lastModifiedTime()), fileAttributes.isDirectory()));
+            }
+        }
+        return specFiles;
+    }
 //    public static List<SpecFile> returnFilesWithSubstring(List<SpecFile> specFiles, String substring){
 //        List<SpecFile> returnList = new ArrayList<>();
 //        for(SpecFile sf : specFiles){
@@ -79,5 +83,4 @@ public class Main {
 //            if(fileName.contains(substring)){returnList.add(sf);}
 //        }
 //        return returnList;
-//    }
 }

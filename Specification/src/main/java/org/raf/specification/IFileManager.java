@@ -5,6 +5,7 @@ import org.raf.exceptions.IllegalDestinationException;
 
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 interface IFileManager {
@@ -52,13 +53,13 @@ interface IFileManager {
     boolean containsFile(String directoryPath, List<String> fileName) throws Exception;
     String returnFileLocation(String folderPath) throws Exception;
     List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) throws Exception;
-    List<SpecFile> returnFilesModifiedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
-    List<SpecFile> returnFilesCreatedDuringPeriod(FileTime startDate, FileTime endDate, String directoryPath) throws Exception;
+    List<SpecFile> returnFilesModifiedDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, String directoryPath) throws Exception;
+    List<SpecFile> returnFilesCreatedDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, String directoryPath) throws Exception;
 
     //Wrapper methods
     List<String> returnFileName(List<SpecFile> files);
     List<String> returnFilePath(List<SpecFile> files);
-    List<FileTime> returnDateCreated(List<SpecFile> files);
-    List<FileTime> returnDateMModified(List<SpecFile> files);
+    List<LocalDateTime> returnDateCreated(List<SpecFile> files);
+    List<LocalDateTime> returnDateMModified(List<SpecFile> files);
     List<Boolean> returnIfDepository(List<SpecFile> files);
 }

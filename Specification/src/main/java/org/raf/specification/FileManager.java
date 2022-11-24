@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -346,15 +348,15 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public List<FileTime> returnDateCreated(List<SpecFile> list) {
-        List<FileTime> creationDates = new ArrayList<>();
+    public List<LocalDateTime> returnDateCreated(List<SpecFile> list) {
+        List<LocalDateTime> creationDates = new ArrayList<>();
         for(SpecFile sf: list) creationDates.add(sf.getDateCreated());
         return creationDates;
     }
 
     @Override
-    public List<FileTime> returnDateMModified(List<SpecFile> list) {
-        List<FileTime> modificationDates = new ArrayList<>();
+    public List<LocalDateTime> returnDateMModified(List<SpecFile> list) {
+        List<LocalDateTime> modificationDates = new ArrayList<>();
         for(SpecFile sf: list) modificationDates.add(sf.getDateModified());
         return modificationDates;
 
@@ -367,6 +369,49 @@ public abstract class FileManager implements IFileManager{
         return booleans;
 
     }
+
+    @Override
+    public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
+        ESortingOrder order = sortingCriteria.getSortingOrder();
+        if (order.equals(ESortingOrder.DESCENDING)){
+            files.sort(new SpecFIleComparator(sortingCriteria).reversed());
+        }
+        else{
+            files.sort(new SpecFIleComparator(sortingCriteria));
+        }
+        return files;
+    }
+
+
+
+    @Override
+    public List<SpecFile> returnFilesModifiedDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, String path) throws Exception {
+        List<SpecFile> files = returnDirectoryFiles(path);
+        List<SpecFile> returnList = new ArrayList<>();
+        for(SpecFile sf : files){
+            if(inPeriod(sf.getDateModified(), startDate, endDate)){
+                returnList.add(sf);
+            }
+        }
+        return returnList;
+    }
+
+    @Override
+    public List<SpecFile> returnFilesCreatedDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, String path) throws Exception {
+        List<SpecFile> files = returnDirectoryFiles(path);
+        List<SpecFile> returnList = new ArrayList<>();
+        for(SpecFile sf : files){
+            if(inPeriod(sf.getDateCreated(), startDate, endDate)){
+                returnList.add(sf);
+            }
+        }
+        return returnList;
+    }
+
+    private boolean inPeriod(LocalDateTime a, LocalDateTime b1, LocalDateTime b2){
+        return a.compareTo(b1) >= 0 && a.compareTo(b2) <= 0;
+    }
+
 
 
     public List<SpecFile> returnFilesWithSubstring(List<SpecFile> specFiles, String substring){

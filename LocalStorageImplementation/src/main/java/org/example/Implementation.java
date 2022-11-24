@@ -13,6 +13,8 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.Utils.convertToLocalDateTime;
+
 
 public class Implementation extends FileManager{
 
@@ -48,7 +50,7 @@ public class Implementation extends FileManager{
             for(String str : fileNames){
                 String path = formatPath(s,str);
                 BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(path), BasicFileAttributes.class);
-                specFiles.add(new SpecFile(path, str, fileAttributes.creationTime(), fileAttributes.lastModifiedTime(), fileAttributes.isDirectory()));
+                specFiles.add(new SpecFile(path, str, convertToLocalDateTime(fileAttributes.creationTime()) , convertToLocalDateTime(fileAttributes.lastModifiedTime()), fileAttributes.isDirectory()));
             }
         }
 //        if(fileNames == null)
@@ -63,46 +65,6 @@ public class Implementation extends FileManager{
     }
 
 
-
-    @Override
-    public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
-        ESortingOrder order = sortingCriteria.getSortingOrder();
-        if (order.equals(ESortingOrder.DESCENDING)){
-            files.sort(new SpecFIleComparator(sortingCriteria).reversed());
-        }
-        else{
-            files.sort(new SpecFIleComparator(sortingCriteria));
-        }
-        return files;
-    }
-
-    @Override
-    public List<SpecFile> returnFilesModifiedDuringPeriod(FileTime startDate, FileTime endDate, String path) throws Exception {
-        List<SpecFile> files = returnDirectoryFiles(path);
-        List<SpecFile> returnList = new ArrayList<>();
-        for(SpecFile sf : files){
-            if(inPeriod(sf.getDateModified(), startDate, endDate)){
-                returnList.add(sf);
-            }
-        }
-        return returnList;
-    }
-
-    @Override
-    public List<SpecFile> returnFilesCreatedDuringPeriod(FileTime startDate, FileTime endDate, String path) throws Exception {
-        List<SpecFile> files = returnDirectoryFiles(path);
-        List<SpecFile> returnList = new ArrayList<>();
-        for(SpecFile sf : files){
-            if(inPeriod(sf.getDateCreated(), startDate, endDate)){
-                returnList.add(sf);
-            }
-        }
-        return returnList;
-    }
-
-    private boolean inPeriod(FileTime a, FileTime b1, FileTime b2){
-        return a.compareTo(b1) >= 0 && a.compareTo(b2) <= 0;
-    }
 
     private String formatPath(String prefixPath, String fileName) {
         String path = prefixPath;

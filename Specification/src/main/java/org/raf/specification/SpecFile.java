@@ -1,15 +1,17 @@
 package org.raf.specification;
 
 import java.nio.file.attribute.FileTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class SpecFile {
     String path;
     String fileName;
-    FileTime dateCreated;
-    FileTime dateModified;
+    LocalDateTime dateCreated;
+    LocalDateTime dateModified;
     boolean directory;
 
-    public SpecFile(String path, String fileName, FileTime dateCreated, FileTime dateModified, boolean directory) {
+    public SpecFile(String path, String fileName, LocalDateTime dateCreated, LocalDateTime dateModified, boolean directory) {
         this.path = path;
         this.fileName = fileName;
         this.dateCreated = dateCreated;
@@ -53,19 +55,19 @@ public class SpecFile {
         this.fileName = fileName;
     }
 
-    public FileTime getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(FileTime dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    public FileTime getDateModified() {
+    public LocalDateTime getDateModified() {
         return dateModified;
     }
 
-    public void setDateModified(FileTime dateModified) {
+    public void setDateModified(LocalDateTime dateModified) {
         this.dateModified = dateModified;
     }
 
