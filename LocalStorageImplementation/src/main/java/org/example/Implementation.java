@@ -38,6 +38,4 @@ public class Implementation extends FileManager{
         path += fileName;
         return path;
     }
-
-
 }

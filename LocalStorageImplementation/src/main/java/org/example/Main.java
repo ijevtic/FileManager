@@ -23,9 +23,12 @@ public class Main {
 //        File f = new File(im.getStorage().getPath());
 //        im.createDirectory(im.getStorage().getPath(), "abc{1-20}d");
 //        System.out.println(f.length());
-        List<SpecFile> files = returnDirectoryFiles("/home/nata/Desktop/test1");
-        for(SpecFile sf : files)
-            System.out.println(sf.getDateCreated());
+
+        Implementation im = new Implementation();
+        List<SpecFile> files = returnDirectoryFiles("/home/ijevtic/Desktop/");
+        List<SpecFile> sorted = im.sortFiles(new SortingCriteria(true, false, false, ESortingOrder.ASCENDING), files);
+        for(SpecFile sf : sorted)
+            System.out.println(sf.getFileName());
     }
 
 //    private static String dfs(String path, String name){

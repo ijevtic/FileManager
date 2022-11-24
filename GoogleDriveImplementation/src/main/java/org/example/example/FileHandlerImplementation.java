@@ -196,9 +196,5 @@ public class FileHandlerImplementation extends FileHandler {
                     GUtils.convertTime(f.getCreatedTime()), GUtils.convertTime(f.getModifiedTime()), false));
         }
         return retList;
-
-
     }
-
-
 }
