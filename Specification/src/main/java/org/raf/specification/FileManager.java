@@ -176,7 +176,7 @@ public abstract class FileManager implements IFileManager{
                 throw new IllegalDestinationException("Illegal destination " + f.getPath() + " " + destinationPath);
             }
             try {
-                getStorage().getFileHandler().addFiles(f, new SpecFile(destinationPath));
+                getStorage().getFileHandler().addFile(f, new SpecFile(destinationPath));
             } catch (IOException e) {
                 throw new Exception(e);
             }
@@ -189,7 +189,7 @@ public abstract class FileManager implements IFileManager{
             throw new IllegalDestinationException("Illegal destination " + source.getPath() + " " + destination.getPath());
         }
         try {
-            getStorage().getFileHandler().copy(source, destination);
+            getStorage().getFileHandler().downloadFile(source, destination);
         } catch (IOException e) {
             throw new Exception(e);
         }
