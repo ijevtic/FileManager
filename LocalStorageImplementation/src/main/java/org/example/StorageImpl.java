@@ -6,12 +6,17 @@ import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.specification.Configuration;
 import org.raf.specification.FileHandler;
 import org.raf.specification.Storage;
+import org.raf.specification.StorageManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
 public class StorageImpl extends Storage {
+
+    static {
+        StorageManager.registerStorage(new StorageImpl());
+    }
 
     public StorageImpl() {
         super();
