@@ -54,7 +54,14 @@ public abstract class FileManager implements IFileManager{
 
     @Override
     public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException, FileNotFoundCustomException {
-        if(!getStorage().fileCountCheck(rootPath, 1)) {
+        boolean fileCountCheck;
+        try {
+            fileCountCheck = getStorage().fileCountCheck(rootPath, 1);
+        }
+        catch (Exception e) {
+            throw new FileNotFoundCustomException(e.toString());
+        }
+        if (!fileCountCheck) {
             throw new BrokenConfigurationException("Broken exception for file " + rootPath);
         }
         createAndStoreDirectory(formatPath(rootPath, "dir"), maxFileCount);
@@ -90,13 +97,11 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
+    public void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException, FileNotFoundCustomException {
         if(!isAncestor(getStorage().getPath(), destination.getPath())) {
             throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
         }
-        if(!getStorage().fileCountCheck(destination.getPath(), 1)) {
-            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
-        }
+        fileCountCheck(destination);
         try {
             String destinationPath = formatPath(destination.getPath(), file.getFileName());
 //            Files.move(Paths.get(file.getPath()), Paths.get(destinationPath));
@@ -128,13 +133,11 @@ public abstract class FileManager implements IFileManager{
     }
 
     @Override
-    public void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException {
+    public void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException, FileNotFoundCustomException {
         if(!isAncestor(getStorage().getPath(), destination.getPath())) {
             throw new IllegalDestinationException("Illegal destination " + file.getPath() + " " + destination.getPath());
         }
-        if(!getStorage().fileCountCheck(destination.getPath(), 1)) {
-            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
-        }
+        fileCountCheck(destination);
         try {
             String destinationPath = formatPath(destination.getPath(), file.getFileName());
             getStorage().getFileHandler().copy(file, destination);
@@ -466,6 +469,19 @@ public abstract class FileManager implements IFileManager{
 
     public void setStorage(Storage storage) {
         this.storage = storage;
+    }
+
+    private void fileCountCheck(SpecFile destination) throws FileNotFoundCustomException, BrokenConfigurationException {
+        boolean fileCountCheck;
+        try {
+            fileCountCheck = getStorage().fileCountCheck(destination.getPath(), 1);
+        }
+        catch (Exception e) {
+            throw new FileNotFoundCustomException(e.toString());
+        }
+        if(!fileCountCheck) {
+            throw new BrokenConfigurationException("Broken exception for file " + destination.getPath());
+        }
     }
 
 }

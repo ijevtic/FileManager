@@ -1,6 +1,7 @@
 package org.raf.specification;
 
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.exceptions.IllegalDestinationException;
 
 import java.io.IOException;
@@ -25,11 +26,11 @@ interface IFileManager {
     void removeFile(SpecFile file) throws Exception;
     void removeFiles(String[] files) throws Exception;
     void removeFiles(SpecFile[] files) throws Exception;
-    void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException;
+    void moveFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException, FileNotFoundCustomException;
     void moveFile(SpecFile file, String destinationPath) throws Exception;
     void moveFile(String filePath, String destinationPath) throws Exception;
     void moveFiles(List<String> files, String destinationPath) throws Exception;
-    void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException;
+    void copyFile(SpecFile file, SpecFile destination) throws BrokenConfigurationException, IllegalDestinationException, FileNotFoundCustomException;
     void copyFile(SpecFile file, String destinationPath) throws Exception;
     void copyFile(String filePath, String destinationPath) throws Exception;
     void copyFiles(List<String> files, String destinationPath) throws Exception;

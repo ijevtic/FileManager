@@ -201,8 +201,7 @@ public class FileHandlerImplementation extends FileHandler {
         return retList;
     }
 
-    @Override
-    public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
+    public byte[] getFileInnerData(SpecFile source) throws FileNotFoundCustomException, IOException {
         File sourceFile = getFileFromPath(source.getPath());
         try {
             OutputStream outputStream = new ByteArrayOutputStream();
@@ -212,11 +211,16 @@ public class FileHandlerImplementation extends FileHandler {
 
             ByteArrayOutputStream baos = (ByteArrayOutputStream) outputStream;
             byte[] arr = baos.toByteArray();
-            writeByte(arr, Utils.formatPath(destination.getPath(), sourceFile.getName()));
-
+            return arr;
         } catch (GoogleJsonResponseException e) {
             throw e;
         }
+    }
+
+    @Override
+    public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
+        byte[] arr = getFileInnerData(source);
+        writeByte(arr, Utils.formatPath(destination.getPath(), source.getFileName()));
     }
 
     private void writeByte(byte[] bytes, String path)

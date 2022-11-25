@@ -18,32 +18,29 @@ public class Configuration {
         this.globalFileCount = 10;
         this.mapFileCount = new HashMap<>();
     }
-    public Configuration(String storagePath, int byteSize, List<String> forbiddenExtensions, int globalFileCount, Map<String, Integer> mapFileCount) {
-        this.path = createPath(storagePath);
+
+    public Configuration(int byteSize, List<String> forbiddenExtensions, int globalFileCount, Map<String, Integer> mapFileCount) {
         this.byteSize = byteSize;
         this.forbiddenExtensions = new ArrayList<>(forbiddenExtensions);
         this.globalFileCount = globalFileCount;
         this.mapFileCount = new HashMap<>(mapFileCount);
     }
 
-    public Configuration(String storagePath, int byteSize, int globalFileCount) {
-        this.path = createPath(storagePath);
+    public Configuration(int byteSize, int globalFileCount) {
         this.byteSize = byteSize;
         this.globalFileCount = globalFileCount;
         this.forbiddenExtensions = new ArrayList<>();
         this.mapFileCount = new HashMap<>();
     }
 
-    public Configuration(String storagePath, int byteSize, List<String> forbiddenExtensions, int globalFileCount) {
-        this.path = createPath(storagePath);
+    public Configuration(int byteSize, List<String> forbiddenExtensions, int globalFileCount) {
         this.byteSize = byteSize;
         this.forbiddenExtensions = new ArrayList<>(forbiddenExtensions);
         this.globalFileCount = globalFileCount;
         this.mapFileCount = new HashMap<>();
     }
 
-    public Configuration(String storagePath, int byteSize, int globalFileCount, Map<String, Integer> mapFileCount) {
-        this.path = createPath(storagePath);
+    public Configuration(int byteSize, int globalFileCount, Map<String, Integer> mapFileCount) {
         this.byteSize = byteSize;
         this.forbiddenExtensions = new ArrayList<>();
         this.globalFileCount = globalFileCount;
@@ -117,6 +114,10 @@ public class Configuration {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setPathFromStorage(String storagePath) {
+        this.path = createPath(storagePath);
     }
 
     private String createPath(String storagePath) {

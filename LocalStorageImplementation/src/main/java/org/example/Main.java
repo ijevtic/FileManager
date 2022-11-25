@@ -24,11 +24,18 @@ public class Main {
 //        im.createDirectory(im.getStorage().getPath(), "abc{1-20}d");
 //        System.out.println(f.length());
 
+//        Implementation im = new Implementation();
+//        List<SpecFile> files = returnDirectoryFiles("/home/ijevtic/Desktop/");
+//        List<SpecFile> sorted = im.sortFiles(new SortingCriteria(true, false, false, ESortingOrder.ASCENDING), files);
+//        for(SpecFile sf : sorted)
+//            System.out.println(sf.getFileName());
         Implementation im = new Implementation();
-        List<SpecFile> files = returnDirectoryFiles("/home/ijevtic/Desktop/");
-        List<SpecFile> sorted = im.sortFiles(new SortingCriteria(true, false, false, ESortingOrder.ASCENDING), files);
-        for(SpecFile sf : sorted)
-            System.out.println(sf.getFileName());
+        Configuration c = new Configuration();
+        im.createStorage(c, "/home/ijevtic/Desktop", "gas");
+
+//        im.loadStorage("/home/ijevtic/Desktop/gas");
+
+
     }
 
 //    private static String dfs(String path, String name){

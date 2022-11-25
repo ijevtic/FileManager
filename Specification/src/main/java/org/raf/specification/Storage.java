@@ -1,8 +1,10 @@
 package org.raf.specification;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,23 +16,24 @@ import static org.raf.utils.Utils.*;
 public abstract class Storage {
     private String path;
     private Configuration configuration;
+    @JsonIgnore
     private FileHandler fileHandler;
 
+    @JsonIgnore
     private volatile static Storage instance = null;
     public Storage() {}
 
-    public Storage(String path) {
-        this.path = path;
-    }
     public Storage(String path, Configuration configuration) {
         this.path = path;
         this.configuration = configuration;
+        this.configuration.setPathFromStorage(path);
     }
 
     public Storage(String path, Configuration configuration, FileHandler fileHandler) {
         this.path = path;
         this.configuration = configuration;
         this.fileHandler = fileHandler;
+        this.configuration.setPathFromStorage(path);
     }
 
     public FileHandler getFileHandler() {
@@ -57,42 +60,44 @@ public abstract class Storage {
         this.configuration = configuration;
     }
 
-    public void updateConfiguration() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(configuration.getPath());
-        objectMapper.writeValue(file, this);
-    }
+    public abstract void updateConfiguration() throws IOException, FileNotFoundCustomException;
+//    public void updateConfiguration() throws IOException {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        File file = new File(configuration.getPath());
+//        objectMapper.writeValue(file, this);
+//    }
 
-    public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File configFile;
-        String configurationPath = getConfigurationPath();
-        if(configuration == null)
-            configFile = new File(configurationPath);
-        else
-            configFile = new File(configuration.getPath());
-        if(!configFile.createNewFile()) {
-            try {
-                Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
-                });
-                setConfiguration(s.configuration);
-                configuration.setPath(configurationPath);
-            }
-            catch(IOException exception) {
-                throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
-            }
+    public abstract Configuration readConfiguration() throws IOException, BrokenConfigurationException;
+//    public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        File configFile;
+//        String configurationPath = getConfigurationPath();
+//        if(configuration == null)
+//            configFile = new File(configurationPath);
+//        else
+//            configFile = new File(configuration.getPath());
+//        if(!configFile.createNewFile()) {
+//            try {
+//                Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
+//                });
+//                setConfiguration(s.configuration);
+//                configuration.setPath(configurationPath);
+//            }
+//            catch(IOException exception) {
+//                throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
+//            }
+//
+//        }
+//        else {
+//            setConfiguration(new Configuration());
+//            configuration.setPath(configurationPath);
+//            updateConfiguration();
+//        }
+//
+//        return configuration;
+//    }
 
-        }
-        else {
-            setConfiguration(new Configuration());
-            configuration.setPath(configurationPath);
-            updateConfiguration();
-        }
-
-        return configuration;
-    }
-
-    private String getConfigurationPath() {
+    protected String getConfigurationPath() {
         String res = path;
         if(path.charAt(path.length()-1) != '/')
             res += "/";
@@ -122,7 +127,10 @@ public abstract class Storage {
 
     protected abstract long getFileSize(String filePath);
 
-    protected abstract int getFileCount(String filePath);
+    protected int getFileCount(String path) throws IOException, FileNotFoundCustomException {
+        File f = new File(path);
+        return getFileHandler().getFilesFromDir(path).size();
+    }
 
     public boolean fileSizeCheck(List<SpecFile> files) {
         int maxByteSize = this.getConfiguration().getByteSize();
@@ -135,7 +143,7 @@ public abstract class Storage {
         return true;
     }
 
-    public boolean fileCountCheck(String dirPath, int cntNewFiles){
+    public boolean fileCountCheck(String dirPath, int cntNewFiles) throws IOException, FileNotFoundCustomException {
         int maxFileCount;
         if(comparePaths(dirPath, this.getPath()))
             maxFileCount = this.getConfiguration().getGlobalFileCount();

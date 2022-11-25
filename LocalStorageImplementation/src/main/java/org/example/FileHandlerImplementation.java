@@ -1,5 +1,6 @@
 package org.example;
 
+import jdk.jshell.spi.ExecutionControl;
 import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.FileHandler;
 import org.raf.specification.SpecFile;
@@ -88,6 +89,11 @@ public class FileHandlerImplementation extends FileHandler {
 //        }
 
         return specFiles;
+    }
+
+    @Override
+    public byte[] getFileInnerData(SpecFile specFile) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
