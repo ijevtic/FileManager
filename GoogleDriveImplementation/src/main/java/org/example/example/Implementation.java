@@ -2,6 +2,7 @@ package org.example.example;
 
 import com.google.api.services.drive.Drive;
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.*;
 
 import java.io.IOException;
@@ -20,17 +21,17 @@ public class Implementation extends FileManager {
     }
 
     @Override
-    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, IOException {
+    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, IOException, FileNotFoundCustomException {
         String storagePath = formatPath(rootPath, name);
 
         setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation(service)));
-//        getStorage().getFileHandler().createDirectory(storagePath);
-//        try {
-//            getStorage().updateConfiguration();
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        getStorage().getFileHandler().createDirectory(storagePath);
+        try {
+            getStorage().updateConfiguration();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -39,7 +40,6 @@ public class Implementation extends FileManager {
         s.setFileHandler(new FileHandlerImplementation(service));
         s.readConfiguration();
         setStorage(s);
-        System.out.println(getStorage());
     }
 
     public Drive getService() {

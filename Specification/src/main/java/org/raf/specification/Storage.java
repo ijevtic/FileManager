@@ -1,6 +1,5 @@
 package org.raf.specification;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.FileNotFoundCustomException;
 
@@ -13,11 +12,9 @@ import static org.raf.utils.Utils.*;
 public abstract class Storage {
     private String path;
     private Configuration configuration;
-    @JsonIgnore
-    private FileHandler fileHandler;
+    private transient FileHandler fileHandler;
 
-    @JsonIgnore
-    private volatile static Storage instance = null;
+    private transient volatile static Storage instance = null;
     public Storage() {}
 
     public Storage(String path, Configuration configuration) {
@@ -58,41 +55,8 @@ public abstract class Storage {
     }
 
     public abstract void updateConfiguration() throws IOException, FileNotFoundCustomException;
-//    public void updateConfiguration() throws IOException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        File file = new File(configuration.getPath());
-//        objectMapper.writeValue(file, this);
-//    }
 
-    public abstract Configuration readConfiguration() throws IOException, BrokenConfigurationException;
-//    public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        File configFile;
-//        String configurationPath = getConfigurationPath();
-//        if(configuration == null)
-//            configFile = new File(configurationPath);
-//        else
-//            configFile = new File(configuration.getPath());
-//        if(!configFile.createNewFile()) {
-//            try {
-//                Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
-//                });
-//                setConfiguration(s.configuration);
-//                configuration.setPath(configurationPath);
-//            }
-//            catch(IOException exception) {
-//                throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
-//            }
-//
-//        }
-//        else {
-//            setConfiguration(new Configuration());
-//            configuration.setPath(configurationPath);
-//            updateConfiguration();
-//        }
-//
-//        return configuration;
-//    }
+    public abstract void readConfiguration() throws IOException, BrokenConfigurationException;
 
     protected String getConfigurationPath() {
         String res = path;

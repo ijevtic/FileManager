@@ -1,19 +1,30 @@
 package org.example.example;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
+import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.FileNotFoundCustomException;
+import org.raf.specification.Configuration;
 import org.raf.specification.FileHandler;
 import org.raf.specification.SpecFile;
+import org.raf.specification.Storage;
 import org.raf.utils.Utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 public class FileHandlerImplementation extends FileHandler {
@@ -89,12 +100,17 @@ public class FileHandlerImplementation extends FileHandler {
 
     @Override
     public boolean createDirectory(String path) throws RuntimeException, FileNotFoundCustomException {
+        System.out.println("loooool");
         File fileMetadata = new File();
 
-        File parentFile = getFileFromPath(Utils.getParentPath(path));
+        String parentPath = Utils.getParentPath(path);
+        String parentFileId = "root";
+        System.out.println(path);
+        if(!parentPath.equals("/"))
+            getFileFromPath(parentPath);
 
         fileMetadata.setName(Utils.getNameFromPath(path));
-        fileMetadata.setParents(List.of(parentFile.getId()));
+        fileMetadata.setParents(List.of(parentFileId));
         fileMetadata.setMimeType("application/vnd.google-apps.folder");
         try {
             File file = service.files().create(fileMetadata)
@@ -201,6 +217,7 @@ public class FileHandlerImplementation extends FileHandler {
         return retList;
     }
 
+    @Override
     public byte[] getFileInnerData(SpecFile source) throws FileNotFoundCustomException, IOException {
         File sourceFile = getFileFromPath(source.getPath());
         try {
@@ -214,6 +231,51 @@ public class FileHandlerImplementation extends FileHandler {
             return arr;
         } catch (GoogleJsonResponseException e) {
             throw e;
+        }
+    }
+
+    public void updateConfiguration(Storage storage) {
+        java.io.File file = new java.io.File("/home/ijevtic/configuration.json");
+
+        try {
+            file.createNewFile();
+            try (Writer writer = new FileWriter("/home/ijevtic/configuration.json")) {
+                Gson gson = new GsonBuilder().create();
+                gson.toJson(storage, writer);
+            }
+
+            storage.setConfiguration(new Configuration());
+            storage.getConfiguration().setPathFromStorage(storage.getPath());
+
+            try {
+                delete(new SpecFile(storage.getConfiguration().getConfigPath()));
+            } catch(FileNotFoundCustomException e) { }
+            addFile(new SpecFile("/home/ijevtic/configuration.json"), new SpecFile(storage.getPath()));
+            Files.delete(Paths.get(file.getPath()));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void readConfig(SpecFile configuration, Storage storage) throws RuntimeException {
+        String fileId = "";
+        try {
+            fileId = getFileFromPath(configuration.getPath()).getId();
+        }
+        catch (FileNotFoundCustomException e) {
+            updateConfiguration(storage);
+            return;
+        }
+        try {
+            Gson gson = new Gson();
+            InputStream is = service.files().get(fileId).executeMediaAsInputStream();
+            Type userListType = new TypeToken<StorageImpl>(){}.getType();
+            StorageImpl s = gson.fromJson(new String(is.readAllBytes(), StandardCharsets.UTF_8), userListType);
+            storage.setConfiguration(s.getConfiguration());
+            storage.getConfiguration().setPathFromStorage(storage.getPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 

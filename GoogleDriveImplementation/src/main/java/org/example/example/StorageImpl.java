@@ -27,17 +27,14 @@ public class StorageImpl extends Storage {
     }
 
     @Override
-    public void updateConfiguration() throws FileNotFoundCustomException, IOException {
-        SpecFile configuration = new SpecFile(getConfigurationPath());
-        byte [] data = getFileHandler().getFileInnerData(configuration);
-        Gson gson = new Gson();
-        String test = gson.toJson(data);
-        System.out.println(test);
+    public void updateConfiguration() {
+        ((FileHandlerImplementation)getFileHandler()).updateConfiguration(this);
     }
 
     @Override
-    public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
-        return null;
+    public void readConfiguration() {
+        SpecFile configuration = new SpecFile(getConfigurationPath());
+        ((FileHandlerImplementation)getFileHandler()).readConfig(configuration, this);
     }
 
     @Override
