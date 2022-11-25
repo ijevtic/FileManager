@@ -78,4 +78,12 @@ public class SpecFile {
     public void setDirectory(boolean directory) {
         this.directory = directory;
     }
+
+    @Override
+    public String toString() {
+        return fileName +
+                "\npath: '" + path +
+                "\ndateCreated: " + dateCreated +
+                "\ndateModified: " + dateModified + '\n';
+    }
 }

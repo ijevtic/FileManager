@@ -18,10 +18,6 @@ public class StorageImpl extends Storage {
         super();
     }
 
-    public StorageImpl(String path) {
-        super(path);
-    }
-
     public StorageImpl(String path, Configuration configuration) {
         super(path, configuration);
     }

@@ -47,12 +47,13 @@ public abstract class FileManager implements IFileManager{
         createStorage(configuration, STORAGE_PATH, name);
     }
 
+    //prosledjuje se path parenta i prav i direktorijum pod nazivom dir
     @Override
     public void createDirectory(String rootPath) throws BrokenConfigurationException, FileNotFoundCustomException {
         createDirectory(rootPath, -1);
     }
-
     @Override
+
     public void createDirectory(String rootPath, int maxFileCount) throws BrokenConfigurationException, FileNotFoundCustomException {
         boolean fileCountCheck;
         try {
@@ -341,42 +342,6 @@ public abstract class FileManager implements IFileManager{
         return dfs(path,s);
     }
 
-    @Override
-    public List<String> returnFileName(List<SpecFile> list) {
-        List<String> fileNames = new ArrayList<>();
-        for(SpecFile sf: list) fileNames.add(sf.getFileName());
-        return fileNames;
-    }
-
-    @Override
-    public List<String> returnFilePath(List<SpecFile> list) {
-        List<String> filePaths = new ArrayList<>();
-        for(SpecFile sf: list) filePaths.add(sf.getPath());
-        return filePaths;
-    }
-
-    @Override
-    public List<LocalDateTime> returnDateCreated(List<SpecFile> list) {
-        List<LocalDateTime> creationDates = new ArrayList<>();
-        for(SpecFile sf: list) creationDates.add(sf.getDateCreated());
-        return creationDates;
-    }
-
-    @Override
-    public List<LocalDateTime> returnDateMModified(List<SpecFile> list) {
-        List<LocalDateTime> modificationDates = new ArrayList<>();
-        for(SpecFile sf: list) modificationDates.add(sf.getDateModified());
-        return modificationDates;
-
-    }
-
-    @Override
-    public List<Boolean> returnIfDepository(List<SpecFile> list) {
-        List<Boolean> booleans = new ArrayList<>();
-        for(SpecFile sf: list) booleans.add(sf.isDirectory());
-        return booleans;
-
-    }
 
     @Override
     public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
@@ -416,11 +381,42 @@ public abstract class FileManager implements IFileManager{
         return returnList;
     }
 
-    private boolean inPeriod(LocalDateTime a, LocalDateTime b1, LocalDateTime b2){
-        return a.compareTo(b1) >= 0 && a.compareTo(b2) <= 0;
+    @Override
+    public List<String> returnFileName(List<SpecFile> list) {
+        List<String> fileNames = new ArrayList<>();
+        for(SpecFile sf: list) fileNames.add(sf.getFileName());
+        return fileNames;
     }
 
+    @Override
+    public List<String> returnFilePath(List<SpecFile> list) {
+        List<String> filePaths = new ArrayList<>();
+        for(SpecFile sf: list) filePaths.add(sf.getPath());
+        return filePaths;
+    }
 
+    @Override
+    public List<LocalDateTime> returnDateCreated(List<SpecFile> list) {
+        List<LocalDateTime> creationDates = new ArrayList<>();
+        for(SpecFile sf: list) creationDates.add(sf.getDateCreated());
+        return creationDates;
+    }
+
+    @Override
+    public List<LocalDateTime> returnDateMModified(List<SpecFile> list) {
+        List<LocalDateTime> modificationDates = new ArrayList<>();
+        for(SpecFile sf: list) modificationDates.add(sf.getDateModified());
+        return modificationDates;
+
+    }
+
+    @Override
+    public List<Boolean> returnIfDepository(List<SpecFile> list) {
+        List<Boolean> booleans = new ArrayList<>();
+        for(SpecFile sf: list) booleans.add(sf.isDirectory());
+        return booleans;
+
+    }
 
     public List<SpecFile> returnFilesWithSubstring(List<SpecFile> specFiles, String substring){
         List<SpecFile> returnList = new ArrayList<>();
@@ -436,7 +432,7 @@ public abstract class FileManager implements IFileManager{
         List<SpecFile> returnList = new ArrayList<>();
         for (SpecFile sf : specFiles){
             String extension = getExtension(sf.getFileName());
-            if (extensions.contains(extension)){ returnList.add(sf);}
+            if (extension != null && extensions.contains(extension)){ returnList.add(sf);}
         }
         return returnList;
     }

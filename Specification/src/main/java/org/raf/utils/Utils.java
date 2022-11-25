@@ -1,5 +1,6 @@
 package org.raf.utils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,4 +96,9 @@ public class Utils {
             parentPath += "/";
         return parentPath + fileName;
     }
+
+    public static boolean inPeriod(LocalDateTime a, LocalDateTime b1, LocalDateTime b2){
+        return a.compareTo(b1) >= 0 && a.compareTo(b2) <= 0;
+    }
+
 }
