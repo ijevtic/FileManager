@@ -9,7 +9,6 @@ import org.raf.specification.Storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 public class StorageImpl extends Storage {
 
@@ -28,7 +27,7 @@ public class StorageImpl extends Storage {
     @Override
     public void updateConfiguration() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(getConfiguration().getPath());
+        File file = new File(getConfiguration().getConfigPath());
         try {
             file.createNewFile();
         }
@@ -40,20 +39,20 @@ public class StorageImpl extends Storage {
     }
 
     @Override
-        public Configuration readConfiguration() throws IOException, BrokenConfigurationException {
+    public void readConfiguration() throws IOException, BrokenConfigurationException {
         ObjectMapper objectMapper = new ObjectMapper();
         File configFile;
         String configurationPath = getConfigurationPath();
         if(getConfiguration() == null)
             configFile = new File(configurationPath);
         else
-            configFile = new File(getConfiguration().getPath());
+            configFile = new File(getConfiguration().getConfigPath());
         if(!configFile.createNewFile()) {
             try {
                 Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
                 });
                 setConfiguration(s.getConfiguration());
-                getConfiguration().setPath(configurationPath);
+                getConfiguration().setPathFromStorage(this.getPath());
             }
             catch(IOException exception) {
                 throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
@@ -62,11 +61,9 @@ public class StorageImpl extends Storage {
         }
         else {
             setConfiguration(new Configuration());
-            getConfiguration().setPath(configurationPath);
+            getConfiguration().setPathFromStorage(this.getPath());
             updateConfiguration();
         }
-
-        return getConfiguration();
     }
 
     @Override

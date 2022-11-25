@@ -1,5 +1,8 @@
 package org.raf.specification;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +13,7 @@ public class Configuration {
     private List<String> forbiddenExtensions;
     private int globalFileCount;
     private Map<String, Integer> mapFileCount;
-    private String path;
+    private String configPath;
 
     public Configuration() {
         this.byteSize = 10000;
@@ -108,16 +111,16 @@ public class Configuration {
         this.globalFileCount = globalFileCount;
     }
 
-    public String getPath() {
-        return path;
+    public String getConfigPath() {
+        return configPath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setConfigPath(String configPath) {
+        this.configPath = configPath;
     }
 
     public void setPathFromStorage(String storagePath) {
-        this.path = createPath(storagePath);
+        this.configPath = createPath(storagePath);
     }
 
     private String createPath(String storagePath) {
@@ -135,7 +138,7 @@ public class Configuration {
                 ", forbiddenExtensions=" + forbiddenExtensions +
                 ", globalFileCount=" + globalFileCount +
                 ", mapFileCount=" + mapFileCount +
-                ", path='" + path + '\'' +
+                ", configPath='" + configPath + '\'' +
                 '}';
     }
 }
