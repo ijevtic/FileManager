@@ -63,7 +63,7 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
-    public void addFiles(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+    public void addFile(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
         copy(source, destination);
     }
 
@@ -88,6 +88,11 @@ public class FileHandlerImplementation extends FileHandler {
 //        }
 
         return specFiles;
+    }
+
+    @Override
+    public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
+        copy(source, destination);
     }
 
 

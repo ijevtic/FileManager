@@ -10,7 +10,10 @@ import org.raf.specification.FileHandler;
 import org.raf.specification.SpecFile;
 import org.raf.utils.Utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 public class FileHandlerImplementation extends FileHandler {
@@ -120,7 +123,7 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
-    public void addFiles(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
+    public void addFile(SpecFile source, SpecFile destination) throws IOException, FileNotFoundCustomException {
         String destId = getFileFromPath(destination.getPath()).getId();
         File fileMetadata = new File();
         fileMetadata.setName(Utils.getNameFromPath(source.getPath()));
@@ -196,5 +199,36 @@ public class FileHandlerImplementation extends FileHandler {
                     GUtils.convertTime(f.getCreatedTime()), GUtils.convertTime(f.getModifiedTime()), false));
         }
         return retList;
+    }
+
+    @Override
+    public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
+        File sourceFile = getFileFromPath(source.getPath());
+        try {
+            OutputStream outputStream = new ByteArrayOutputStream();
+
+            service.files().get(sourceFile.getId())
+                    .executeMediaAndDownloadTo(outputStream);
+
+            ByteArrayOutputStream baos = (ByteArrayOutputStream) outputStream;
+            byte[] arr = baos.toByteArray();
+            writeByte(arr, Utils.formatPath(destination.getPath(), sourceFile.getName()));
+
+        } catch (GoogleJsonResponseException e) {
+            throw e;
+        }
+    }
+
+    private void writeByte(byte[] bytes, String path)
+    {
+        java.io.File file = new java.io.File(path);
+        try {
+            OutputStream os = new FileOutputStream(file);
+            os.write(bytes);
+            os.close();
+        }
+        catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
     }
 }
