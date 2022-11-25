@@ -35,7 +35,7 @@ public class Implementation extends FileManager {
 
     @Override
     public void loadStorage(String path) throws IOException, BrokenConfigurationException {
-        Storage s = new StorageImpl(path);
+        Storage s = new StorageImpl(path, new Configuration());
         s.setFileHandler(new FileHandlerImplementation(service));
         s.readConfiguration();
         setStorage(s);

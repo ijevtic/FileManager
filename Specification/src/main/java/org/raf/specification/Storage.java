@@ -1,15 +1,12 @@
 package org.raf.specification;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.FileNotFoundCustomException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import static org.raf.utils.Utils.*;
 
