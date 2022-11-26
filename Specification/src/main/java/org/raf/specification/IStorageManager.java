@@ -20,6 +20,10 @@ interface IStorageManager {
      */
     void createStorage(String path, String name) throws Exception;
 
+    void createFile(String rootPath, String name) throws RuntimeException, FileNotFoundCustomException, BrokenConfigurationException;
+
+    void createFile(String path) throws RuntimeException, FileNotFoundCustomException, BrokenConfigurationException;
+
     /**
      * Creates storage with the given name on a default path. This method uses the default configuration,
      * where byteSize = 10000, forbiddenExtensions = "exe" and globalFileCount = 10.

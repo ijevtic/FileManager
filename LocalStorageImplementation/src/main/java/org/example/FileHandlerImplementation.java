@@ -51,6 +51,16 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
+    public void createFile(String path) throws RuntimeException{
+        File f = new File(path);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public boolean rename(SpecFile file, String newName) {
         File oldFile = new File(file.getPath());
         File newFile = new File(getParentPath(file.getPath())+newName);

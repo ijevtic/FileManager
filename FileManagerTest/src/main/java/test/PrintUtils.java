@@ -29,6 +29,7 @@ public class PrintUtils {
         System.out.println("13 Sort files");
         System.out.println("14 Return files modified during period");
         System.out.println("15 Return files created during period");
+        System.out.println("16 Create file");
 
         System.out.println("Wrapper methods");
         System.out.println();
@@ -220,6 +221,18 @@ public class PrintUtils {
             System.out.println("wrong command");
             return null;
         }
+        if(x == 16) {
+            if(isValidPath(args[1]) && args.length == 2) {
+                sm.createFile(formatInputString(args[1]));
+                return null;
+            }
+            if(isValidPath(args[1]) && args.length == 3) {
+                sm.createFile(formatInputString(args[1]), args[2]);
+                return null;
+            }
+            System.out.println("wrong command");
+            return null;
+        }
         System.out.println("wrong command");
         return null;
     }
@@ -257,8 +270,6 @@ public class PrintUtils {
                 return false;
             list.add(new SpecFile(formatInputString(path)));
         }
-        if(list.size() != 0)
-            System.out.println("NIJE NULL");
         return true;
     }
 
@@ -364,14 +375,18 @@ public class PrintUtils {
         for(SpecFile file:specFiles) {
             if(wrapperOption == 1)
                 System.out.println(file.getFileName());
-            if(wrapperOption == 2)
+            else if(wrapperOption == 2)
                 System.out.println(file.getPath());
-            if(wrapperOption == 3)
+            else if(wrapperOption == 3)
                 System.out.println(file.getDateCreated());
-            if(wrapperOption == 4)
+            else if(wrapperOption == 4)
                 System.out.println(file.getDateModified());
-            if(wrapperOption == 5)
+            else if(wrapperOption == 5)
                 System.out.println(file.isDirectory());
+
+            else {
+                System.out.println(file.toString());
+            }
 
 //            System.out.println("1 File name");
 //            System.out.println("2 File path");

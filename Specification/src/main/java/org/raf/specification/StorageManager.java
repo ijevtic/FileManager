@@ -18,6 +18,19 @@ public abstract class StorageManager implements IStorageManager {
     private Storage storage = null;
 
     @Override
+    public void createFile(String path) throws RuntimeException, FileNotFoundCustomException, BrokenConfigurationException{
+        fileCountCheck(new SpecFile(Utils.getParentPath(path)));
+        if(!getStorage().extensionCheck(List.of(new SpecFile(path)))) {
+            throw new BrokenConfigurationException("Broken exception for file " + path);
+        }
+        getStorage().getFileHandler().createFile(path);
+    }
+
+    public void createFile(String path, String name) throws RuntimeException, FileNotFoundCustomException, BrokenConfigurationException{
+        createFile(formatPath(path, name));
+    }
+
+    @Override
     public void createStorage() throws Exception {
         createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }

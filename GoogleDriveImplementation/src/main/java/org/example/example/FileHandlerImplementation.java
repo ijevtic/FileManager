@@ -291,6 +291,32 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
+    public void createFile(String path) throws RuntimeException {
+        String parentId = getFileFromPath(Utils.getParentPath(path)).getId();
+        File fileMetadata = new File();
+        fileMetadata.setName(Utils.getNameFromPath(Utils.getNameFromPath(path)));
+        fileMetadata.setParents(List.of(parentId));
+        java.io.File filePath = new java.io.File("/home/ijevtic/nesto.txt");
+        try {
+            filePath.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        FileContent content = new FileContent("", filePath);
+        try {
+            File file = service.files().create(fileMetadata, content)
+                    .setFields("id, parents")
+                    .execute();
+            System.out.println("File ID: " + file.getId());
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to upload file: " + e.getDetails());
+            throw new RuntimeException();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
         byte[] arr = getFileInnerData(source);
         writeByte(arr, Utils.formatPath(destination.getPath(), source.getFileName()));
