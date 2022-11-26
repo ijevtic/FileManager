@@ -1,0 +1,3 @@
+# FileManager
+File Manager library implemented for GoogleDrive Storage and Local Storage. Group packaging with maven superPom, 
+implementations are runtime dependencies, javadoc documentation generating...
