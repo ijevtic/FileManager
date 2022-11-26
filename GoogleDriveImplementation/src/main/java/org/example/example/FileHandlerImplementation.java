@@ -100,12 +100,10 @@ public class FileHandlerImplementation extends FileHandler {
 
     @Override
     public boolean createDirectory(String path) throws RuntimeException, FileNotFoundCustomException {
-        System.out.println("loooool");
         File fileMetadata = new File();
 
         String parentPath = Utils.getParentPath(path);
         String parentFileId = "root";
-        System.out.println(path);
         if(!parentPath.equals("/"))
             parentFileId = getFileFromPath(parentPath).getId();
 
@@ -178,8 +176,6 @@ public class FileHandlerImplementation extends FileHandler {
                 throw new RuntimeException(e);
             }
             if(result.getFiles().isEmpty()) {
-                //TODO
-                System.out.println("nije nasao");
                 throw new FileNotFoundCustomException("File not found on path" + filePath);
             }
             File f = result.getFiles().get(0);

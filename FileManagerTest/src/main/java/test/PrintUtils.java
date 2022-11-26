@@ -54,17 +54,14 @@ public class PrintUtils {
 
         if(x == 1) {
             if(args.length == 2) {
-                System.out.println("ovde print " + args[1]);
                 sm.createDirectory(args[1]);
                 return null;
             }
             if(args.length == 3 && isNumeric(args[2])) {
-                System.out.println("ovde print 2 " + args[1] + " " + args[2]);
                 sm.createDirectory(args[1], Integer.parseInt(args[2]));
                 return null;
             }
             if(args.length == 3) {
-                System.out.println("print3 " + args[1] + " " + args[2]);
                 sm.createDirectory(args[1], args[2]);
                 return null;
             }

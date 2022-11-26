@@ -98,7 +98,6 @@ public abstract class StorageManager implements IStorageManager {
     }
 
     private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException, FileNotFoundCustomException {
-        System.out.println("pravi se dir na path: " + path);
         if(!getStorage().getFileHandler().createDirectory(path))
             return;
         if(maxFileCount < 0)

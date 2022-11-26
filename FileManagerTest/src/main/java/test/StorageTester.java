@@ -21,7 +21,9 @@ public class StorageTester {
         }
 
         try {
+            // Local Storage Implementation
 //            Class.forName("org.example.Implementation");
+            //Google Drive implementation
             Class.forName("org.example.example.GDImplementation");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -45,15 +47,6 @@ public class StorageTester {
 
         while(true) {
             input = in.nextLine();
-
-            if(input.equals("test1")) {
-                new File("/home/ijevtic/Desktop/aaa/test1").mkdirs();
-                continue;
-            }
-            if(input.equals("test2")) {
-                new File("/home/ijevtic/Desktop/aaa/test2/").mkdirs();
-                continue;
-            }
 
             if(input.equals("exit")) {
                 try {
