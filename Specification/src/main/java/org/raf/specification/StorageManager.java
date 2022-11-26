@@ -18,27 +18,27 @@ public abstract class StorageManager implements IStorageManager {
     private Storage storage = null;
 
     @Override
-    public void createStorage() throws FileNotFoundCustomException {
+    public void createStorage() throws Exception {
         createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }
 
     @Override
-    public void createStorage(String path, String name) throws FileNotFoundCustomException {
+    public void createStorage(String path, String name) throws Exception {
         createStorage(CONFIGURATION, path, name);
     }
 
     @Override
-    public void createStorage(String name) throws FileNotFoundCustomException {
+    public void createStorage(String name) throws Exception {
         createStorage(CONFIGURATION, STORAGE_PATH, name);
     }
 
     @Override
-    public void createStorage(Configuration configuration) throws FileNotFoundCustomException{
+    public void createStorage(Configuration configuration) throws Exception{
         createStorage(configuration, STORAGE_PATH, STORAGE_NAME);
     }
 
     @Override
-    public void createStorage(Configuration configuration, String name) throws FileNotFoundCustomException{
+    public void createStorage(Configuration configuration, String name) throws Exception{
         createStorage(configuration, STORAGE_PATH, name);
     }
     @Override

@@ -58,7 +58,7 @@ interface IStorageManager {
      * @throws IOException
      * @throws BrokenConfigurationException
      */
-    void loadStorage(String path) throws IOException, BrokenConfigurationException;
+    void loadStorage(String path) throws BrokenConfigurationException;
 
     void saveStorage() throws IOException;
 

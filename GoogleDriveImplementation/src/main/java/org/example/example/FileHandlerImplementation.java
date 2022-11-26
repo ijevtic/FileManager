@@ -107,7 +107,7 @@ public class FileHandlerImplementation extends FileHandler {
         String parentFileId = "root";
         System.out.println(path);
         if(!parentPath.equals("/"))
-            getFileFromPath(parentPath);
+            parentFileId = getFileFromPath(parentPath).getId();
 
         fileMetadata.setName(Utils.getNameFromPath(path));
         fileMetadata.setParents(List.of(parentFileId));
@@ -244,7 +244,9 @@ public class FileHandlerImplementation extends FileHandler {
                 gson.toJson(storage, writer);
             }
 
-            storage.setConfiguration(new Configuration());
+            if(storage.getConfiguration() == null)
+                storage.setConfiguration(new Configuration());
+
             storage.getConfiguration().setPathFromStorage(storage.getPath());
 
             try {

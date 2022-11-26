@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class StorageTester {
     public static void main(String[] args) {
-        new File("/home/nata/Desktop/proba").mkdirs();
         Scanner in = new Scanner(System.in);
         boolean play = true;
 
@@ -22,7 +21,7 @@ public class StorageTester {
         }
 
         try {
-            Class.forName("org.example.Implementation");
+            Class.forName("org.example.example.GDImplementation");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -35,7 +34,7 @@ public class StorageTester {
         StorageManager storageManager = null;
         try {
             storageManager = StorageProvider.getStorageManager(path, name, loadStorage);
-        } catch (FileNotFoundCustomException | BrokenConfigurationException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -45,6 +44,16 @@ public class StorageTester {
 
         while(true) {
             input = in.nextLine();
+
+            if(input.equals("test1")) {
+                new File("/home/ijevtic/Desktop/aaa/test1").mkdirs();
+                continue;
+            }
+            if(input.equals("test2")) {
+                new File("/home/ijevtic/Desktop/aaa/test2/").mkdirs();
+                continue;
+            }
+
             if(input.equals("exit")) {
                 try {
                     storageManager.saveStorage();
@@ -62,7 +71,7 @@ public class StorageTester {
                 input = input.replaceAll("( )+", " ");
                 String [] niz = input.split(" ");
                 int firstOption = 0;
-                int wrapperOption = 0;
+                int wrapperOption = -1;
                 if(niz[0].contains("&")) {
                     firstOption = Integer.parseInt(niz[0].split("&")[0]);
                     wrapperOption = Integer.parseInt(niz[0].split("&")[1]);
@@ -71,7 +80,7 @@ public class StorageTester {
                     firstOption = Integer.parseInt(niz[0]);
                 try {
                     Object response = PrintUtils.callFunction(firstOption, niz, storageManager);
-                    PrintUtils.showResponse(firstOption, response);
+                    PrintUtils.showResponse(firstOption, wrapperOption, response);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }

@@ -224,9 +224,9 @@ public class PrintUtils {
         return null;
     }
 
-    public static void showResponse(int x, Object response) {
+    public static void showResponse(int x, int wrapperOption, Object response) {
         if(x == 8 || x == 9 || x == 10 || x == 13 || x == 14 || x == 15)
-            printSpecFileList(response);
+            printSpecFileList(response, wrapperOption);
         if(x == 11) {
             boolean contains = (boolean) response;
             System.out.println("contains = " + contains);
@@ -359,10 +359,28 @@ public class PrintUtils {
     }
 
 
-    private static void printSpecFileList(Object s) {
+    private static void printSpecFileList(Object s, int wrapperOption) {
         List<SpecFile> specFiles = (List<SpecFile>) s;
-        for(SpecFile file:specFiles)
-            System.out.println(file.toString());
+        for(SpecFile file:specFiles) {
+            if(wrapperOption == 1)
+                System.out.println(file.getFileName());
+            if(wrapperOption == 2)
+                System.out.println(file.getPath());
+            if(wrapperOption == 3)
+                System.out.println(file.getDateCreated());
+            if(wrapperOption == 4)
+                System.out.println(file.getDateModified());
+            if(wrapperOption == 5)
+                System.out.println(file.isDirectory());
+
+//            System.out.println("1 File name");
+//            System.out.println("2 File path");
+//            System.out.println("3 Date created");
+//            System.out.println("4 Date modified");
+//            System.out.println("5 if directory");
+
+//            System.out.println(file.toString());
+        }
         return;
     }
     private static String formatInputString(String s) {

@@ -6,21 +6,18 @@ import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.*;
 
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 import java.security.GeneralSecurityException;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.example.example.GDriveConnection.getDriveService;
 import static org.raf.utils.Utils.formatPath;
 
-public class Implementation extends StorageManager {
+public class GDImplementation extends StorageManager {
 
     static {
-        StorageProvider.registerStorageManager(new Implementation());
+        StorageProvider.registerStorageManager(new GDImplementation());
     }
     private Drive service;
-    public Implementation(){
+    public GDImplementation(){
         try {
             this.service = getDriveService();
         } catch (GeneralSecurityException e) {

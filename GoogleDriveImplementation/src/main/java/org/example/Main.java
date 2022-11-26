@@ -1,14 +1,11 @@
 package org.example;
 
-import org.example.example.Implementation;
-import org.raf.specification.SpecFile;
-
-import java.util.List;
+import org.example.example.GDImplementation;
 
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Implementation im = new Implementation();
+        GDImplementation im = new GDImplementation();
         im.loadStorage("/lolcina");
     }
 }

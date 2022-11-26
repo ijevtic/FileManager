@@ -27,7 +27,7 @@ public class Implementation extends StorageManager{
     }
 
     @Override
-    public void loadStorage(String path) throws BrokenConfigurationException, FileNotFoundCustomException {
+    public void loadStorage(String path) throws BrokenConfigurationException {
         Storage s = new StorageImpl(path, new Configuration());
         s.setFileHandler(new FileHandlerImplementation());
         s.readConfiguration();
