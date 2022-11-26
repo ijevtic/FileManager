@@ -11,6 +11,7 @@ public class SpecFile {
     LocalDateTime dateModified;
     boolean directory;
 
+
     public SpecFile(String path, String fileName, LocalDateTime dateCreated, LocalDateTime dateModified, boolean directory) {
         this.path = path;
         this.fileName = fileName;
