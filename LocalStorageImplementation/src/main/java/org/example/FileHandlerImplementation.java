@@ -1,6 +1,5 @@
 package org.example;
 
-import jdk.jshell.spi.ExecutionControl;
 import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.FileHandler;
 import org.raf.specification.SpecFile;
@@ -43,7 +42,7 @@ public class FileHandlerImplementation extends FileHandler {
             return false;
         try {
             new File(path).mkdirs();
-            System.out.printf("Directory on path %s is created!%n", path);
+            System.out.printf("Directoryyyyy on path %s is created!%n", path);
             return true;
 
         } catch (Exception e) {
@@ -99,6 +98,25 @@ public class FileHandlerImplementation extends FileHandler {
     @Override
     public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
         copy(source, destination);
+    }
+
+    @Override
+    public SpecFile getFullSpecFile(SpecFile specFile) {
+        File f = new File(specFile.getPath());
+        try {
+            BasicFileAttributes fileAttributes = Files.readAttributes(Path.of(specFile.getPath()), BasicFileAttributes.class);
+            return new SpecFile(specFile.getPath(), specFile.getFileName(), convertToLocalDateTime(fileAttributes.creationTime()),
+                    convertToLocalDateTime(fileAttributes.lastModifiedTime()), fileAttributes.isDirectory());
+        } catch (IOException e) {
+            return null;
+        }
+
+    }
+
+    @Override
+    protected long getFileSize(SpecFile path) {
+        File f = new File(path.getPath());
+        return f.length();
     }
 
 

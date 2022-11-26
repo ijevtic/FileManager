@@ -5,15 +5,10 @@ import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.exceptions.IllegalDestinationException;
 
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.List;
 
-interface IFileManager {
-    /**
-     * Creates Storage
-     * @throws Exception
-     */
+interface IStorageManager {
     void createStorage() throws Exception;
 
     /**
@@ -64,6 +59,8 @@ interface IFileManager {
      * @throws BrokenConfigurationException
      */
     void loadStorage(String path) throws IOException, BrokenConfigurationException;
+
+    void saveStorage() throws IOException;
 
     /**
      * Creates a directory with the default name "dir" on the given parent path.

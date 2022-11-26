@@ -15,7 +15,8 @@ public abstract class FileHandler {
     public abstract List<SpecFile> getFilesFromDir(String dirPath) throws FileNotFoundCustomException, IOException;
     public abstract byte[] getFileInnerData(SpecFile source) throws FileNotFoundCustomException, IOException;
     public abstract void downloadFile(SpecFile source, SpecFile destinationPath) throws FileNotFoundCustomException, IOException;
-
+    public abstract SpecFile getFullSpecFile(SpecFile file);
+    protected abstract long getFileSize(SpecFile filePath);
 //    public abstract List<SpecFile> directoryFiles(String path) throws Exception;
 
 }

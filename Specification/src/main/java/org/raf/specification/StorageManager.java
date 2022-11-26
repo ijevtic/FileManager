@@ -5,12 +5,7 @@ import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.exceptions.IllegalDestinationException;
 import org.raf.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,33 +13,37 @@ import java.util.List;
 import static org.raf.utils.Constants.*;
 import static org.raf.utils.Utils.*;
 
-public abstract class FileManager implements IFileManager{
+public abstract class StorageManager implements IStorageManager {
 
     private Storage storage = null;
 
     @Override
-    public void createStorage() throws Exception {
+    public void createStorage() throws FileNotFoundCustomException {
         createStorage(CONFIGURATION, STORAGE_PATH, STORAGE_NAME);
     }
 
     @Override
-    public void createStorage(String path, String name) throws Exception {
+    public void createStorage(String path, String name) throws FileNotFoundCustomException {
         createStorage(CONFIGURATION, path, name);
     }
 
     @Override
-    public void createStorage(String name) throws Exception {
+    public void createStorage(String name) throws FileNotFoundCustomException {
         createStorage(CONFIGURATION, STORAGE_PATH, name);
     }
 
     @Override
-    public void createStorage(Configuration configuration) throws Exception {
+    public void createStorage(Configuration configuration) throws FileNotFoundCustomException{
         createStorage(configuration, STORAGE_PATH, STORAGE_NAME);
     }
 
     @Override
-    public void createStorage(Configuration configuration, String name) throws Exception {
+    public void createStorage(Configuration configuration, String name) throws FileNotFoundCustomException{
         createStorage(configuration, STORAGE_PATH, name);
+    }
+    @Override
+    public void saveStorage() throws IOException {
+        getStorage().updateConfiguration();
     }
 
     //prosledjuje se path parenta i prav i direktorijum pod nazivom dir
@@ -75,6 +74,7 @@ public abstract class FileManager implements IFileManager{
 
     @Override
     public void createDirectory(String rootPath, String pattern, int maxFileCount) throws Exception {
+        System.out.println(rootPath + " " + pattern + " " + maxFileCount + " ");
         List<String> dirNames = Utils.dirNamesFromPattern(pattern);
         if(!getStorage().fileCountCheck(rootPath, dirNames.size())) {
             throw new BrokenConfigurationException("Broken exception for file " + rootPath);
@@ -85,6 +85,7 @@ public abstract class FileManager implements IFileManager{
     }
 
     private void createAndStoreDirectory(String path, int maxFileCount) throws RuntimeException, FileNotFoundCustomException {
+        System.out.println("pravi se dir na path: " + path);
         if(!getStorage().getFileHandler().createDirectory(path))
             return;
         if(maxFileCount < 0)
@@ -345,14 +346,18 @@ public abstract class FileManager implements IFileManager{
 
     @Override
     public List<SpecFile> sortFiles(SortingCriteria sortingCriteria, List<SpecFile> files) {
+        List<SpecFile> fullSpecFiles = new ArrayList<>();
+        System.out.println("krenuo u sort");
+        for(SpecFile f:files)
+            fullSpecFiles.add(getStorage().getFileHandler().getFullSpecFile(f));
         ESortingOrder order = sortingCriteria.getSortingOrder();
         if (order.equals(ESortingOrder.DESCENDING)){
-            files.sort(new SpecFIleComparator(sortingCriteria).reversed());
+            fullSpecFiles.sort(new SpecFIleComparator(sortingCriteria).reversed());
         }
         else{
-            files.sort(new SpecFIleComparator(sortingCriteria));
+            fullSpecFiles.sort(new SpecFIleComparator(sortingCriteria));
         }
-        return files;
+        return fullSpecFiles;
     }
 
 

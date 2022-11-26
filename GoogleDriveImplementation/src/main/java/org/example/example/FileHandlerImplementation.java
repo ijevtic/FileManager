@@ -201,7 +201,7 @@ public class FileHandlerImplementation extends FileHandler {
             FileList result = service.files().list()
                     .setQ("trashed = false and '" + dir.getId() + "' in parents")
                     .setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name, createdTime, modifiedTime, parents)")
+                    .setFields("nextPageToken, files(id, name, createdTime, modifiedTime, parents, size)")
                     .setPageToken(pageToken)
                     .execute();
 
@@ -280,9 +280,25 @@ public class FileHandlerImplementation extends FileHandler {
     }
 
     @Override
+    protected long getFileSize(SpecFile specFile) {
+        File f = getFileFromPath(specFile.getPath());
+        if(f.getSize() == null)
+            return 0;
+        return f.getSize();
+
+    }
+
+    @Override
     public void downloadFile(SpecFile source, SpecFile destination) throws FileNotFoundCustomException, IOException {
         byte[] arr = getFileInnerData(source);
         writeByte(arr, Utils.formatPath(destination.getPath(), source.getFileName()));
+    }
+
+    @Override
+    public SpecFile getFullSpecFile(SpecFile specFile) {
+        File file = getFileFromPath(specFile.getPath());
+        return new SpecFile(specFile.getPath(), specFile.getFileName(), specFile.getDateCreated(),
+                specFile.getDateModified(), false);
     }
 
     private void writeByte(byte[] bytes, String path)
