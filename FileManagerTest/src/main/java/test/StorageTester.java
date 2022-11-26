@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class StorageTester {
     public static void main(String[] args) {
-        System.out.println("stvarno je buildovao");
         Scanner in = new Scanner(System.in);
         boolean play = true;
 
@@ -22,7 +21,8 @@ public class StorageTester {
         }
 
         try {
-            Class.forName("org.example.example.GDImplementation");
+            Class.forName("org.example.Implementation");
+//            Class.forName("org.example.example.GDImplementation");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

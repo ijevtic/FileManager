@@ -1,6 +1,7 @@
 package org.raf.specification;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.FileNotFoundCustomException;
 
@@ -13,10 +14,10 @@ import static org.raf.utils.Utils.*;
 public abstract class Storage {
     private String path;
     private Configuration configuration;
-//    @JsonIgnore
+    @JsonIgnore
     private transient FileHandler fileHandler;
 
-//    @JsonIgnore
+    @JsonIgnore
     private transient volatile static Storage instance = null;
     public Storage() {}
 
