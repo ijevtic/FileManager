@@ -14,14 +14,24 @@ import java.util.List;
 import static org.example.example.GDriveConnection.getDriveService;
 import static org.raf.utils.Utils.formatPath;
 
-public class Implementation extends FileManager {
+public class Implementation extends StorageManager {
+
+    static {
+        StorageProvider.registerStorageManager(new Implementation());
+    }
     private Drive service;
-    public Implementation() throws IOException, GeneralSecurityException {
-        this.service = getDriveService();
+    public Implementation(){
+        try {
+            this.service = getDriveService();
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, IOException, FileNotFoundCustomException {
+    public void createStorage(Configuration configuration, String rootPath, String name) throws FileNotFoundCustomException {
         String storagePath = formatPath(rootPath, name);
 
         setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation(service)));
@@ -35,7 +45,7 @@ public class Implementation extends FileManager {
     }
 
     @Override
-    public void loadStorage(String path) throws IOException, BrokenConfigurationException {
+    public void loadStorage(String path) throws BrokenConfigurationException {
         Storage s = new StorageImpl(path, new Configuration());
         s.setFileHandler(new FileHandlerImplementation(service));
         s.readConfiguration();

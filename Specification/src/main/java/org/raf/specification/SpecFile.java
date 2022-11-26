@@ -1,5 +1,7 @@
 package org.raf.specification;
 
+import org.raf.utils.Utils;
+
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class SpecFile {
 
     public SpecFile(String path) {
         this.path = path;
+        this.fileName = Utils.getNameFromPath(path);
     }
 
     public SpecFile(String path, String fileName, boolean directory) {
@@ -82,8 +85,8 @@ public class SpecFile {
     @Override
     public String toString() {
         return fileName +
-                "\npath: '" + path +
-                "\ndateCreated: " + dateCreated +
-                "\ndateModified: " + dateModified + '\n';
+                " path: '" + path +
+                " dateCreated: " + dateCreated +
+                " dateModified: " + dateModified + '\n';
     }
 }

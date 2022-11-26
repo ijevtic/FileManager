@@ -1,5 +1,6 @@
 package org.raf.specification;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.raf.exceptions.BrokenConfigurationException;
 import org.raf.exceptions.FileNotFoundCustomException;
 
@@ -12,8 +13,10 @@ import static org.raf.utils.Utils.*;
 public abstract class Storage {
     private String path;
     private Configuration configuration;
+    @JsonIgnore
     private transient FileHandler fileHandler;
 
+    @JsonIgnore
     private transient volatile static Storage instance = null;
     public Storage() {}
 
@@ -56,7 +59,7 @@ public abstract class Storage {
 
     public abstract void updateConfiguration() throws IOException, FileNotFoundCustomException;
 
-    public abstract void readConfiguration() throws IOException, BrokenConfigurationException;
+    public abstract void readConfiguration() throws FileNotFoundCustomException, BrokenConfigurationException;
 
     protected String getConfigurationPath() {
         String res = path;
@@ -86,8 +89,6 @@ public abstract class Storage {
         return true;
     }
 
-    protected abstract long getFileSize(String filePath);
-
     protected int getFileCount(String path) throws IOException, FileNotFoundCustomException {
         File f = new File(path);
         return getFileHandler().getFilesFromDir(path).size();
@@ -97,8 +98,8 @@ public abstract class Storage {
         int maxByteSize = this.getConfiguration().getByteSize();
         int totalNewSize = 0;
         for(SpecFile specFile:files) {
-            totalNewSize += getFileSize(specFile.getPath());
-            if(totalNewSize + getFileSize(this.getPath()) > maxByteSize)
+            totalNewSize += getFileHandler().getFileSize((specFile));
+            if(totalNewSize + getFileHandler().getFileSize(new SpecFile(this.getPath())) > maxByteSize)
                 return false;
         }
         return true;

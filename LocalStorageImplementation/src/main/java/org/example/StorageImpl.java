@@ -3,19 +3,16 @@ package org.example;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.raf.exceptions.BrokenConfigurationException;
+import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.specification.Configuration;
 import org.raf.specification.FileHandler;
 import org.raf.specification.Storage;
-import org.raf.specification.StorageManager;
+import org.raf.specification.StorageProvider;
 
 import java.io.File;
 import java.io.IOException;
 
 public class StorageImpl extends Storage {
-
-    static {
-        StorageManager.registerStorage(new StorageImpl());
-    }
 
     public StorageImpl() {
         super();
@@ -44,7 +41,8 @@ public class StorageImpl extends Storage {
     }
 
     @Override
-    public void readConfiguration() throws IOException, BrokenConfigurationException {
+    public void readConfiguration() throws BrokenConfigurationException, FileNotFoundCustomException {
+        System.out.println("krece citanje");
         ObjectMapper objectMapper = new ObjectMapper();
         File configFile;
         String configurationPath = getConfigurationPath();
@@ -52,28 +50,26 @@ public class StorageImpl extends Storage {
             configFile = new File(configurationPath);
         else
             configFile = new File(getConfiguration().getConfigPath());
-        if(!configFile.createNewFile()) {
-            try {
-                Storage s = objectMapper.readValue(configFile, new TypeReference<Storage>() {
-                });
-                setConfiguration(s.getConfiguration());
+        try {
+            if(!configFile.createNewFile()) {
+                try {
+                    StorageImpl s = objectMapper.readValue(configFile, new TypeReference<StorageImpl>() {
+                    });
+                    setConfiguration(s.getConfiguration());
+                    getConfiguration().setPathFromStorage(this.getPath());
+                }
+                catch(IOException exception) {
+                    throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
+                }
+
+            }
+            else {
+                setConfiguration(new Configuration());
                 getConfiguration().setPathFromStorage(this.getPath());
+                updateConfiguration();
             }
-            catch(IOException exception) {
-                throw new BrokenConfigurationException("Configuration file on path " + configurationPath + " is broken");
-            }
-
+        } catch (IOException e) {
+            throw new FileNotFoundCustomException(configFile.getPath());
         }
-        else {
-            setConfiguration(new Configuration());
-            getConfiguration().setPathFromStorage(this.getPath());
-            updateConfiguration();
-        }
-    }
-
-    @Override
-    protected long getFileSize(String path) {
-        File f = new File(path);
-        return f.length();
     }
 }

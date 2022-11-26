@@ -5,18 +5,18 @@ import org.raf.exceptions.FileNotFoundCustomException;
 import org.raf.exceptions.IllegalDestinationException;
 
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.List;
 
-interface IFileManager {
+interface IStorageManager {
     void createStorage() throws Exception;
     void createStorage(String path, String name) throws Exception;
     void createStorage(String name) throws Exception;
     void createStorage(Configuration c) throws Exception;
     void createStorage(Configuration c, String name) throws Exception;
-    void createStorage(Configuration c, String rootPath, String name) throws Exception;
-    void loadStorage(String path) throws IOException, BrokenConfigurationException;
+    void createStorage(Configuration c, String rootPath, String name) throws FileNotFoundCustomException;
+    void saveStorage() throws IOException;
+    void loadStorage(String path) throws BrokenConfigurationException;
     void createDirectory(String rootPath) throws Exception;
     void createDirectory(String rootPath, int fileCount) throws Exception;
     void createDirectory(String rootPath, String pattern) throws Exception;

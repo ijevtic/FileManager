@@ -6,10 +6,14 @@ import org.raf.specification.*;
 import java.io.IOException;
 
 
-public class Implementation extends FileManager{
+public class Implementation extends StorageManager{
+
+    static {
+        StorageProvider.registerStorageManager(new Implementation());
+    }
 
     @Override
-    public void createStorage(Configuration configuration, String rootPath, String name) throws RuntimeException, FileNotFoundCustomException {
+    public void createStorage(Configuration configuration, String rootPath, String name) throws FileNotFoundCustomException {
         String storagePath = formatPath(rootPath, name);
 
         setStorage(new StorageImpl(storagePath, configuration, new FileHandlerImplementation()));
@@ -23,7 +27,7 @@ public class Implementation extends FileManager{
     }
 
     @Override
-    public void loadStorage(String path) throws IOException, BrokenConfigurationException {
+    public void loadStorage(String path) throws BrokenConfigurationException, FileNotFoundCustomException {
         Storage s = new StorageImpl(path, new Configuration());
         s.setFileHandler(new FileHandlerImplementation());
         s.readConfiguration();

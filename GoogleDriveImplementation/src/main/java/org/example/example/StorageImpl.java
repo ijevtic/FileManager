@@ -36,10 +36,4 @@ public class StorageImpl extends Storage {
         SpecFile configuration = new SpecFile(getConfigurationPath());
         ((FileHandlerImplementation)getFileHandler()).readConfig(configuration, this);
     }
-
-    @Override
-    protected long getFileSize(String s) {
-        return 0;
-    }
-
 }
