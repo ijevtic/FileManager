@@ -50,7 +50,7 @@ interface IStorageManager {
      * @param name Type String.
      * @throws Exception
      */
-    void createStorage(Configuration c, String rootPath, String name) throws Exception;
+    void createStorage(Configuration c, String rootPath, String name) throws FileNotFoundCustomException;
 
     /**
      *  Loads storage located on the given path.
