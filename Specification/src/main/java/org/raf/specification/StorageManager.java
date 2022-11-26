@@ -23,7 +23,7 @@ public abstract class StorageManager implements IStorageManager {
     }
 
     @Override
-    public void createStorage(String path, String name) throws Exception {
+    public void createStorage(String path, String name) throws FileNotFoundCustomException {
         createStorage(CONFIGURATION, path, name);
     }
 

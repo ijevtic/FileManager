@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 public class StorageTester {
     public static void main(String[] args) {
+        System.out.println("stvarno je buildovao");
         Scanner in = new Scanner(System.in);
         boolean play = true;
 

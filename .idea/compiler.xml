@@ -10,8 +10,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="FileManagerSpecification" />
-        <module name="LocalStorageImplementation" />
         <module name="GoogleDriveImplementation" />
+        <module name="LocalStorageImplementation" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

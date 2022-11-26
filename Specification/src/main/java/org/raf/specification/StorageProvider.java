@@ -13,11 +13,7 @@ public class StorageProvider {
         storageManager = fm;
     }
 
-<<<<<<< HEAD
-    public static StorageManager getStorageManager(String path, String name, String loadStorage) throws Exception {
-=======
     public static StorageManager getStorageManager(String path, String name, String loadStorage) throws BrokenConfigurationException, FileNotFoundCustomException, IOException {
->>>>>>> 7c26d98c13f984dd3e27f9f6eade8ff4172f9b2f
         if(loadStorage.equals("0"))
             storageManager.createStorage(path, name);
         else
